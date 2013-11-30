@@ -24,7 +24,7 @@
  ****************************************************************************/
 
 #include "GameOverScene.h"
-#include "HelloWorldScene.h"
+#include "GameScene.h"
 
 using namespace cocos2d;
 
@@ -80,7 +80,7 @@ bool GameOverLayer::init()
 
 void GameOverLayer::gameOverDone()
 {
-	Director::getInstance()->replaceScene( HelloWorld::scene() );
+	Director::getInstance()->replaceScene( GameScene::scene() );
 }
 
 GameOverLayer::~GameOverLayer()

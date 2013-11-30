@@ -1,15 +1,23 @@
-#ifndef __HELLOWORLD_SCENE_H__
-#define __HELLOWORLD_SCENE_H__
+//
+//  GameScene.h
+//  TheOtherWorld
+//
+//  Created by Zhan Huang on 11/30/13.
+//
+//
+
+#ifndef __TheOtherWorld__GameScene__
+#define __TheOtherWorld__GameScene__
 
 #include "cocos2d.h"
 
 //#include "SimpleAudioEngine.h"
 
-class HelloWorld : public cocos2d::LayerColor
+class GameScene : public cocos2d::LayerColor
 {
 public:
-	HelloWorld();
-	~HelloWorld();
+	GameScene();
+	~GameScene();
     
 	// Here's a difference. Method 'init' in cocos2d-x returns bool,
     // instead of returning 'id' in cocos2d-iphone
@@ -22,7 +30,7 @@ public:
 	virtual void menuCloseCallback(cocos2d::Object* sender);
     
 	// implement the "static node()" method manually
-	CREATE_FUNC(HelloWorld);
+	CREATE_FUNC(GameScene);
     
 	void spriteMoveFinished(cocos2d::Node* sender);
     
@@ -43,4 +51,4 @@ protected:
     
 };
 
-#endif  // __HELLOWORLD_SCENE_H__
+#endif /* defined(__TheOtherWorld__GameScene__) */

@@ -1,10 +1,18 @@
-#include "HelloWorldScene.h"
+//
+//  GameScene.cpp
+//  TheOtherWorld
+//
+//  Created by Zhan Huang on 11/30/13.
+//
+//
+
+#include "GameScene.h"
 #include "GameOverScene.h"
 #include "SimpleAudioEngine.h"
 
 using namespace cocos2d;
 
-HelloWorld::~HelloWorld()
+GameScene::~GameScene()
 {
 	if (_targets)
 	{
@@ -22,14 +30,14 @@ HelloWorld::~HelloWorld()
 	// virtual destructor will do this
 }
 
-HelloWorld::HelloWorld()
+GameScene::GameScene()
 :_targets(NULL)
 ,_projectiles(NULL)
 ,_projectilesDestroyed(0)
 {
 }
 
-Scene* HelloWorld::scene()
+Scene* GameScene::scene()
 {
 	Scene * scene = NULL;
 	do
@@ -39,7 +47,7 @@ Scene* HelloWorld::scene()
 		CC_BREAK_IF(! scene);
         
 		// 'layer' is an autorelease object
-		HelloWorld *layer = HelloWorld::create();
+		GameScene *layer = GameScene::create();
 		CC_BREAK_IF(! layer);
         
 		// add layer as a child to scene
@@ -51,7 +59,7 @@ Scene* HelloWorld::scene()
 }
 
 // on "init" you need to initialize your instance
-bool HelloWorld::init()
+bool GameScene::init()
 {
 	bool bRet = false;
 	do
@@ -72,7 +80,7 @@ bool HelloWorld::init()
 		auto closeItem = MenuItemImage::create(
                                                "CloseNormal.png",
                                                "CloseSelected.png",
-                                               CC_CALLBACK_1(HelloWorld::menuCloseCallback,this));
+                                               CC_CALLBACK_1(GameScene::menuCloseCallback,this));
 		CC_BREAK_IF(! closeItem);
         
 		// Place the menu item bottom-right conner.
@@ -87,7 +95,7 @@ bool HelloWorld::init()
 		menu->setPosition(Point::ZERO);
 		CC_BREAK_IF(! menu);
         
-		// Add the menu to HelloWorld layer as a child layer.
+		// Add the menu to GameScene layer as a child layer.
 		this->addChild(menu, 1);
         
 		/////////////////////////////
@@ -98,11 +106,11 @@ bool HelloWorld::init()
                                    origin.y + visibleSize.height/2) );
 		this->addChild(player);
         
-		this->schedule( schedule_selector(HelloWorld::gameLogic), 1.0 );
+		this->schedule( schedule_selector(GameScene::gameLogic), 1.0 );
         
         auto dispatcher = Director::getInstance()->getEventDispatcher();
         auto listener = EventListenerTouchAllAtOnce::create();
-        listener->onTouchesEnded = CC_CALLBACK_2(HelloWorld::onTouchesEnded, this);
+        listener->onTouchesEnded = CC_CALLBACK_2(GameScene::onTouchesEnded, this);
         dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
         
 		_targets = new Array();
@@ -113,9 +121,9 @@ bool HelloWorld::init()
         
 		// use updateGame instead of update, otherwise it will conflit with SelectorProtocol::update
 		// see http://www.cocos2d-x.org/boards/6/topics/1478
-		this->schedule( schedule_selector(HelloWorld::updateGame) );
+		this->schedule( schedule_selector(GameScene::updateGame) );
         
-		CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("background-music-aac.wav", true);
+		// CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("background-music.wav", true);
         
 		bRet = true;
 	} while (0);
@@ -123,14 +131,14 @@ bool HelloWorld::init()
 	return bRet;
 }
 
-void HelloWorld::menuCloseCallback(Object* sender)
+void GameScene::menuCloseCallback(Object* sender)
 {
 	// "close" menu item clicked
 	Director::getInstance()->end();
 }
 
 // cpp with cocos2d-x
-void HelloWorld::addTarget()
+void GameScene::addTarget()
 {
 	Sprite *target = Sprite::create("Target.png", Rect(0,0,27,40) );
     
@@ -159,7 +167,7 @@ void HelloWorld::addTarget()
 	// Create the actions
 	FiniteTimeAction* actionMove = MoveTo::create( (float)actualDuration,
                                                   Point(0 - target->getContentSize().width/2, actualY) );
-	FiniteTimeAction* actionMoveDone = CallFuncN::create( CC_CALLBACK_1(HelloWorld::spriteMoveFinished, this));
+	FiniteTimeAction* actionMoveDone = CallFuncN::create( CC_CALLBACK_1(GameScene::spriteMoveFinished, this));
 	target->runAction( Sequence::create(actionMove, actionMoveDone, NULL) );
     
 	// Add to targets array
@@ -167,7 +175,7 @@ void HelloWorld::addTarget()
 	_targets->addObject(target);
 }
 
-void HelloWorld::spriteMoveFinished(Node* sender)
+void GameScene::spriteMoveFinished(Node* sender)
 {
 	Sprite *sprite = (Sprite *)sender;
 	this->removeChild(sprite, true);
@@ -187,13 +195,13 @@ void HelloWorld::spriteMoveFinished(Node* sender)
 	}
 }
 
-void HelloWorld::gameLogic(float dt)
+void GameScene::gameLogic(float dt)
 {
 	this->addTarget();
 }
 
 // cpp with cocos2d-x
-void HelloWorld::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
+void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 {
 	// Choose one of the touches to work with
 	Touch* touch = touches[0];
@@ -233,17 +241,17 @@ void HelloWorld::onTouchesEnded(const std::vector<Touch*>& touches, Event* event
 	// Move projectile to actual endpoint
 	projectile->runAction( Sequence::create(
                                             MoveTo::create(realMoveDuration, realDest),
-                                            CallFuncN::create(CC_CALLBACK_1(HelloWorld::spriteMoveFinished, this)),
+                                            CallFuncN::create(CC_CALLBACK_1(GameScene::spriteMoveFinished, this)),
                                             NULL) );
     
 	// Add to projectiles array
 	projectile->setTag(2);
 	_projectiles->addObject(projectile);
     
-	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("pew-pew-lei.wav");
+	// CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("effect.wav");
 }
 
-void HelloWorld::updateGame(float dt)
+void GameScene::updateGame(float dt)
 {
 	Array *projectilesToDelete = new Array();
     projectilesToDelete->init();
