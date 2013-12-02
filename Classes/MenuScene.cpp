@@ -10,8 +10,6 @@
 #include "AppMacros.h"
 #include "GameScene.h"
 
-#include "CCEventListenerTouch.h"
-
 USING_NS_CC;
 
 

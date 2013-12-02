@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "MenuScene.h"
+#include "GameScene.h"
 
 USING_NS_CC;
 
@@ -39,7 +40,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     EGLView::getInstance()->setDesignResolutionSize(designSize.width, designSize.height, ResolutionPolicy::NO_BORDER);
     
     // turn on display FPS
-    director->setDisplayStats(true);
+    director->setDisplayStats(false);
     
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);

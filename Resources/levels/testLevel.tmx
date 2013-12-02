@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="20" height="10" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="tmw_desert_spacing" tilewidth="32" tileheight="32" spacing="1" margin="1">
-  <image source="../../../../../XCodeProjects/TiledExamples/tmw_desert_spacing.png" width="265" height="199"/>
+  <image source="tmw_desert_spacing.png" width="265" height="199"/>
  </tileset>
- <layer name="Tile Layer 1" width="20" height="10">
+ <layer name="Background" width="20" height="10">
   <data encoding="base64" compression="zlib">
-   eJyTY2BgkBtCWB4N08o8cs2ml/uGq3mDDQMA/FQXig==
+   eJyTY2BgkBtCmAuJxoeR9SgQYR4xduIyT57G5mHzFyn+lWcg7CZsWI+I8NNAwqTIDRUMAAKiFiY=
   </data>
  </layer>
+ <objectgroup name="Objects" width="20" height="10">
+  <object name="Spawn" x="304" y="48"/>
+ </objectgroup>
 </map>
