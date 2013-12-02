@@ -61,7 +61,11 @@ bool GameScene::init()
         _levelMap = TMXTiledMap::create("testLevel.tmx");
         _levelMap->setScale(2.00);
         _background = _levelMap->getLayer("Background");
+        _meta = _levelMap->getLayer("Meta");
+        _meta->setVisible(false);
         this->addChild(_levelMap, -1);
+        
+        TILE_SIZE = _levelMap->getTileSize().width;
         
         // add player
         TMXObjectGroup *mapObjectGroup = _levelMap->getObjectGroup("Objects");
@@ -112,34 +116,60 @@ void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 	// CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("effect.wav");
 }
 
+Point GameScene::tileCoordForPosition(Point position) {
+    int x = position.x/TILE_SIZE;
+    int y = _levelMap->getMapSize().height - position.y/TILE_SIZE;
+    return Point(x,y);
+}
+
 void GameScene::updateGame(float dt)
 {
     if (!_playerIsMoving) {
         int direction = _dpad->getDirection();
-        log("direction:%d", direction);
         
         if (direction != 0) {
             auto moveVector = Point::ZERO;
             switch (direction) {
                 case 1:
-                    moveVector = Point(0,32);
+                    moveVector = Point(0,TILE_SIZE);
                     break;
                 case 2:
-                    moveVector = Point(0,-32);
+                    moveVector = Point(0,-TILE_SIZE);
                     break;
                 case 3:
-                    moveVector = Point(-32,0);
+                    moveVector = Point(-TILE_SIZE,0);
                     break;
                 case 4:
-                    moveVector = Point(32,0);
+                    moveVector = Point(TILE_SIZE,0);
                     break;
                 default:
                     break;
             }
+            auto moveTarget = _player1->getPosition() + moveVector;
+            
             // Create the action
-            FiniteTimeAction* actionMove = MoveBy::create(0.5, moveVector);
+            FiniteTimeAction* actionMove = MoveTo::create(0.5, moveTarget);
             FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
-            _player1->runAction( Sequence::create(actionMove, actionMoveDone, NULL) );
+            Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
+            
+            // detect collision & alter action if collided
+            auto tileCoord = tileCoordForPosition(moveTarget);
+            log("coord: %f, %f", tileCoord.x, tileCoord.y);
+            int tileGID = _meta->getTileGIDAt(tileCoord);
+            if (tileGID) {
+                auto properties = _levelMap->getPropertiesForGID(tileGID);
+                if (properties) {
+                    auto collision = properties->valueForKey("Collidable");
+                    if (collision && collision->compare("True") == 0){
+                        actionMove->release();
+                        actionSeq->release();
+                        actionMove =MoveTo::create(0.2, _player1->getPosition() + moveVector/4);
+                        FiniteTimeAction* actionMove2 =MoveTo::create(0.2, _player1->getPosition());
+                        actionSeq = Sequence::create(actionMove, actionMove2, actionMoveDone, NULL);
+                    }
+                }
+            }
+            _player1->runAction(actionSeq);
             _playerIsMoving = true;
         }
     }

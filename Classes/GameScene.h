@@ -30,16 +30,22 @@ public:
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameScene);
     
-	void updateGame(float dt);
-    
 	void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+    
+    cocos2d::Point tileCoordForPosition(cocos2d::Point position);
+    
+	void updateGame(float dt);
     
     
 protected:
+    int TILE_SIZE;
     cocos2d::TMXTiledMap *_levelMap;
     cocos2d::TMXLayer *_background;
+    cocos2d::TMXLayer *_meta;
     cocos2d::Sprite *_player1;
+    
     DPad *_dpad;
+    
     bool _playerIsMoving;
     void playerMoveFinished();
 };
