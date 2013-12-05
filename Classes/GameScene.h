@@ -30,6 +30,8 @@ public:
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameScene);
     
+    void alignViewPosition(cocos2d::Point playerPosition);
+    
 	void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     
     cocos2d::Point tileCoordForPosition(cocos2d::Point position);
@@ -47,6 +49,7 @@ protected:
     DPad *_dpad;
     
     bool _playerIsMoving;
+    void collide(cocos2d::Point moveVector);
     void playerMoveFinished();
 };
 

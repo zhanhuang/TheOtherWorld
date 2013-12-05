@@ -62,7 +62,7 @@ bool GameScene::init()
         _levelMap->setScale(2.00);
         _background = _levelMap->getLayer("Background");
         _meta = _levelMap->getLayer("Meta");
-        _meta->setVisible(false);
+//        _meta->setVisible(false);
         this->addChild(_levelMap, -1);
         
         TILE_SIZE = _levelMap->getTileSize().width;
@@ -75,13 +75,14 @@ bool GameScene::init()
         
         _player1 = Sprite::create("Player.png");
         _player1->setPosition(Point(x,y));
+        _playerIsMoving = false;
         this->addChild(_player1);
         
-        _playerIsMoving = false;
+        this->alignViewPosition(Point(x,y));
         
         // add dpad
         _dpad = DPad::create();
-        _dpad->setPosition(Point::ZERO);
+        _dpad->setPosition(-this->getPosition());
         this->addChild(_dpad, 1);
         
         
@@ -104,14 +105,21 @@ bool GameScene::init()
 	return bRet;
 }
 
+void GameScene::alignViewPosition(Point playerPosition){
+    auto visibleSize = Director::getInstance()->getVisibleSize();
+    this->setPosition(Point(visibleSize.width/2 - playerPosition.x, visibleSize.height/2 - playerPosition.y));
+}
+
 // cpp with cocos2d-x
 void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 {
-//	// Choose one of the touches to work with
-//	Touch* touch = touches[0];
-//	Point location = touch->getLocation();
-//    
-//	log("++++++++after  x:%f, y:%f", location.x, location.y);
+	// Choose one of the touches to work with
+	Touch* touch = touches[0];
+	Point location = touch->getLocation();
+    auto tileCoord = tileCoordForPosition(location);
+    log("coord touched: %f, %f", tileCoord.x, tileCoord.y);
+    FiniteTimeAction* tintRed = TintTo::create(0, 255, 0, 0);
+    _background->getTileAt(tileCoord)->runAction(tintRed);
     
 	// CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("effect.wav");
 }
@@ -146,14 +154,15 @@ void GameScene::updateGame(float dt)
                     break;
             }
             auto moveTarget = _player1->getPosition() + moveVector;
+            auto tileCoord = tileCoordForPosition(moveTarget);
             
-            // Create the action
-            FiniteTimeAction* actionMove = MoveTo::create(0.5, moveTarget);
-            FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
-            Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
+            // Check for out of border
+            if(tileCoord.x >= _levelMap->getMapSize().width || tileCoord.y >= _levelMap->getMapSize().height || tileCoord.x < 0 || tileCoord.y < 0){
+                collide(moveVector);
+                return;
+            }
             
             // detect collision & alter action if collided
-            auto tileCoord = tileCoordForPosition(moveTarget);
             log("coord: %f, %f", tileCoord.x, tileCoord.y);
             int tileGID = _meta->getTileGIDAt(tileCoord);
             if (tileGID) {
@@ -161,18 +170,34 @@ void GameScene::updateGame(float dt)
                 if (properties) {
                     auto collision = properties->valueForKey("Collidable");
                     if (collision && collision->compare("True") == 0){
-                        actionMove->release();
-                        actionSeq->release();
-                        actionMove =MoveTo::create(0.2, _player1->getPosition() + moveVector/4);
-                        FiniteTimeAction* actionMove2 =MoveTo::create(0.2, _player1->getPosition());
-                        actionSeq = Sequence::create(actionMove, actionMove2, actionMoveDone, NULL);
+                        collide(moveVector);
+                        return;
                     }
                 }
             }
+            
+            // Create the action
+            FiniteTimeAction* actionMove = MoveBy::create(0.5, moveVector);
+            FiniteTimeAction* actionMoveScreen = MoveBy::create(0.5, -moveVector);
+            FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
+            Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
+            
+            // Run the action, adjust camera & HUD
+            this->runAction(actionMoveScreen);
+            _dpad->runAction(actionMove->clone());
             _player1->runAction(actionSeq);
             _playerIsMoving = true;
         }
     }
+}
+
+void GameScene::collide(Point moveVector){
+    _playerIsMoving = true;
+    FiniteTimeAction* actionMove =MoveBy::create(0.2, moveVector/4);
+    FiniteTimeAction* actionMove2 =MoveBy::create(0.2, -moveVector/4);
+    FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
+    Sequence* actionSeq = Sequence::create(actionMove, actionMove2, actionMoveDone, NULL);
+    _player1->runAction(actionSeq);
 }
 
 void GameScene::playerMoveFinished(){
