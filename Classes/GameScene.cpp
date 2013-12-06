@@ -24,27 +24,6 @@ GameScene::GameScene()
 {
 }
 
-Scene* GameScene::scene()
-{
-	Scene * scene = NULL;
-	do
-	{
-		// 'scene' is an autorelease object
-		scene = Scene::create();
-		CC_BREAK_IF(! scene);
-        
-		// 'layer' is an autorelease object
-		GameScene *layer = GameScene::create();
-		CC_BREAK_IF(! layer);
-        
-		// add layer as a child to scene
-		scene->addChild(layer);
-	} while (0);
-    
-	// return the scene
-	return scene;
-}
-
 // on "init" you need to initialize your instance
 bool GameScene::init()
 {
@@ -55,42 +34,58 @@ bool GameScene::init()
 		// super init first
 		//////////////////////////////////////////////////////////////////////////
         
-		CC_BREAK_IF(! Layer::init());
+		CC_BREAK_IF(! Scene::init());
+        
+        // make game layer
+        _gameLayer = Layer::create();
+		CC_BREAK_IF(! _gameLayer);
+        
+        this->addChild(_gameLayer);
         
         // add tiled map as background
         _levelMap = TMXTiledMap::create("testLevel.tmx");
-        _levelMap->setScale(2.00);
-        _background = _levelMap->getLayer("Background");
+        _levelMap->setScale(2.0);
+        
+        _background = _levelMap->getLayer("background");
         _meta = _levelMap->getLayer("Meta");
-//        _meta->setVisible(false);
-        this->addChild(_levelMap, -1);
+        _meta->setVisible(false);
+        _gameLayer->addChild(_levelMap, -1);
         
         TILE_SIZE = _levelMap->getTileSize().width;
         
         // add player
         TMXObjectGroup *mapObjectGroup = _levelMap->getObjectGroup("Objects");
-        Dictionary *spawnPoint = mapObjectGroup->getObject("Spawn");
+        Dictionary *spawnPoint = mapObjectGroup->getObject("SpawnPoint");
         int x = spawnPoint->valueForKey("x")->intValue();
         int y = spawnPoint->valueForKey("y")->intValue();
         
         _player1 = Sprite::create("Player.png");
         _player1->setPosition(Point(x,y));
+        _player1->setScale(2.0);
         _playerIsMoving = false;
-        this->addChild(_player1);
+        _gameLayer->addChild(_player1);
+        
+        // add HUD
+        _hud = HUD::create();
+//        _hud->setScale(2.0);
+        this->addChild(_hud, 1);
         
         this->alignViewPosition(Point(x,y));
         
-        // add dpad
-        _dpad = DPad::create();
-        _dpad->setPosition(-this->getPosition());
-        this->addChild(_dpad, 1);
+        // add objects
+        Array *allObjects = mapObjectGroup->getObjects();
+        for(int i = 0; i < allObjects->count(); i++){
+            Dictionary *nextObject = (Dictionary *)allObjects->getObjectAtIndex(i);
+            if (nextObject->valueForKey("name")->compare("Block") == 0){
+                // TODO: make block
+            }
+        }
         
-        
-        // add touch listener
-        auto dispatcher = Director::getInstance()->getEventDispatcher();
-        auto listener = EventListenerTouchAllAtOnce::create();
-        listener->onTouchesEnded = CC_CALLBACK_2(GameScene::onTouchesEnded, this);
-        dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+//        // add touch listener
+//        auto dispatcher = Director::getInstance()->getEventDispatcher();
+//        auto listener = EventListenerTouchAllAtOnce::create();
+//        listener->onTouchesEnded = CC_CALLBACK_2(GameScene::onTouchesEnded, this);
+//        dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
         
 		// use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
 		this->schedule( schedule_selector(GameScene::updateGame));
@@ -107,7 +102,7 @@ bool GameScene::init()
 
 void GameScene::alignViewPosition(Point playerPosition){
     auto visibleSize = Director::getInstance()->getVisibleSize();
-    this->setPosition(Point(visibleSize.width/2 - playerPosition.x, visibleSize.height/2 - playerPosition.y));
+    _gameLayer->setPosition(Point(visibleSize.width/2 - playerPosition.x, visibleSize.height/2 - playerPosition.y));
 }
 
 // cpp with cocos2d-x
@@ -125,15 +120,15 @@ void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 }
 
 Point GameScene::tileCoordForPosition(Point position) {
-    int x = position.x/TILE_SIZE;
-    int y = _levelMap->getMapSize().height - position.y/TILE_SIZE;
+    int x = position.x/TILE_SIZE - 0.5;
+    int y = _levelMap->getMapSize().height - position.y/TILE_SIZE - 0.5;
     return Point(x,y);
 }
 
 void GameScene::updateGame(float dt)
 {
     if (!_playerIsMoving) {
-        int direction = _dpad->getDirection();
+        int direction = _hud->getDirection();
         
         if (direction != 0) {
             auto moveVector = Point::ZERO;
@@ -183,8 +178,7 @@ void GameScene::updateGame(float dt)
             Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
             
             // Run the action, adjust camera & HUD
-            this->runAction(actionMoveScreen);
-            _dpad->runAction(actionMove->clone());
+            _gameLayer->runAction(actionMoveScreen);
             _player1->runAction(actionSeq);
             _playerIsMoving = true;
         }

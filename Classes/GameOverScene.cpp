@@ -80,7 +80,7 @@ bool GameOverLayer::init()
 
 void GameOverLayer::gameOverDone()
 {
-	Director::getInstance()->replaceScene( GameScene::scene() );
+	Director::getInstance()->replaceScene( GameScene::create() );
 }
 
 GameOverLayer::~GameOverLayer()

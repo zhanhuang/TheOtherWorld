@@ -37,10 +37,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     
     FileUtils::getInstance()->setSearchPaths(searchPaths);
     
-    EGLView::getInstance()->setDesignResolutionSize(designSize.width, designSize.height, ResolutionPolicy::NO_BORDER);
+    EGLView::getInstance()->setDesignResolutionSize(designSize.width, designSize.height, ResolutionPolicy::FIXED_HEIGHT);
     
     // turn on display FPS
     director->setDisplayStats(false);
+    
+    // set projection to 2D to prevent gaps in the tilemap
+    director->setProjection(cocos2d::Director::Projection::_2D);
     
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);

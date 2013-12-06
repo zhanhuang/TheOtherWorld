@@ -91,6 +91,6 @@ void MenuScene::menuCloseCallback(Object* sender)
 
 void MenuScene::menuStartCallback(Object* sender)
 {
-    auto newGameScene = GameScene::scene();
+    auto newGameScene = GameScene::create();
     Director::getInstance()->replaceScene(newGameScene);
 }

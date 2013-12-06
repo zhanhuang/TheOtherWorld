@@ -10,11 +10,11 @@
 #define __TheOtherWorld__GameScene__
 
 #include "cocos2d.h"
-#include "DPad.h"
+#include "HUD.h"
 
 //#include "SimpleAudioEngine.h"
 
-class GameScene : public cocos2d::Layer
+class GameScene : public cocos2d::Scene
 {
 public:
 	GameScene();
@@ -23,9 +23,6 @@ public:
 	// Here's a difference. Method 'init' in cocos2d-x returns bool,
     // instead of returning 'id' in cocos2d-iphone
 	virtual bool init();
-    
-	// there's no 'id' in cpp, so we recommand to return the exactly class pointer
-	static cocos2d::Scene* scene();
     
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameScene);
@@ -45,8 +42,9 @@ protected:
     cocos2d::TMXLayer *_background;
     cocos2d::TMXLayer *_meta;
     cocos2d::Sprite *_player1;
+    cocos2d::Layer *_gameLayer;
+    HUD *_hud;
     
-    DPad *_dpad;
     
     bool _playerIsMoving;
     void collide(cocos2d::Point moveVector);

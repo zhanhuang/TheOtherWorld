@@ -1,16 +1,16 @@
 //
-//  DPad.cpp
+//  HUD.cpp
 //  TheOtherWorld
 //
 //  Created by Zhan Huang on 12/1/13.
 //
 //
 
-#include "DPad.h"
+#include "HUD.h"
 
 USING_NS_CC;
 
-DPad::~DPad(){
+HUD::~HUD(){
     if (_upArrow) {
         _upArrow->release();
         _upArrow = NULL;
@@ -29,8 +29,8 @@ DPad::~DPad(){
     }
 }
 
-bool DPad::init(){
-    if ( !Menu::init() )
+bool HUD::init(){
+    if ( !Layer::init() )
     {
         return false;
     }
@@ -41,20 +41,26 @@ bool DPad::init(){
     _leftArrow = MenuItemImage::create("arrow_left.png","arrow_left.png");
     _rightArrow = MenuItemImage::create("arrow_right.png","arrow_right.png");
     
-    _upArrow->setPosition(Point(40,64));
-    _downArrow->setPosition(Point(40,16));
-    _leftArrow->setPosition(Point(16,40));
-    _rightArrow->setPosition(Point(64,40));
+    _upArrow->setPosition(Point(0,32));
+    _downArrow->setPosition(Point(0,-32));
+    _leftArrow->setPosition(Point(-32,0));
+    _rightArrow->setPosition(Point(32,0));
     
-    this->addChild(_upArrow);
-    this->addChild(_downArrow);
-    this->addChild(_leftArrow);
-    this->addChild(_rightArrow);
+    _dpad = Menu::create();
+    _dpad->addChild(_upArrow);
+    _dpad->addChild(_downArrow);
+    _dpad->addChild(_leftArrow);
+    _dpad->addChild(_rightArrow);
+    
+    _dpad->setPosition(Point(64, 64));
+    _dpad->setOpacity(128);
+    
+    this->addChild(_dpad);
     
     return true;
 }
 
-int DPad::getDirection(){
+int HUD::getDirection(){
     if (_upArrow && _upArrow->isSelected()) {
         return 1;
     }

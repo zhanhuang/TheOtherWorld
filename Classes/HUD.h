@@ -1,21 +1,21 @@
 //
-//  DPad.h
+//  HUD.h
 //  TheOtherWorld
 //
 //  Created by Zhan Huang on 12/1/13.
 //
 //
 
-#ifndef __TheOtherWorld__DPad__
-#define __TheOtherWorld__DPad__
+#ifndef __TheOtherWorld__HUD__
+#define __TheOtherWorld__HUD__
 
 #include "cocos2d.h"
 
-class DPad : public cocos2d::Menu
+class HUD : public cocos2d::Layer
 {
 public:
-    DPad(){};
-    ~DPad();
+    HUD(){};
+    ~HUD();
     
     // Here's a difference. Method 'init' in cocos2d-x returns bool, instead of returning 'id' in cocos2d-iphone
     virtual bool init();
@@ -23,13 +23,14 @@ public:
     int getDirection();
     
     // implement the "static node()" method manually
-    CREATE_FUNC(DPad);
+    CREATE_FUNC(HUD);
 
 protected:
     cocos2d::MenuItem *_upArrow;
     cocos2d::MenuItem *_downArrow;
     cocos2d::MenuItem *_leftArrow;
     cocos2d::MenuItem *_rightArrow;
+    cocos2d::Menu *_dpad;
 };
 
-#endif /* defined(__TheOtherWorld__DPad__) */
+#endif /* defined(__TheOtherWorld__HUD__) */
