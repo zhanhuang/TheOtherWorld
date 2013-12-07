@@ -43,7 +43,7 @@ bool GameScene::init()
         this->addChild(_gameLayer);
         
         // add tiled map as background
-        _levelMap = TMXTiledMap::create("testLevel.tmx");
+        _levelMap = TMXTiledMap::create("level.tmx");
         _levelMap->setScale(2.0);
         
         _background = _levelMap->getLayer("background");
@@ -163,8 +163,8 @@ void GameScene::updateGame(float dt)
             if (tileGID) {
                 auto properties = _levelMap->getPropertiesForGID(tileGID);
                 if (properties) {
-                    auto collision = properties->valueForKey("Collidable");
-                    if (collision && collision->compare("True") == 0){
+                    auto collision = properties->valueForKey("collidable");
+                    if (collision && collision->compare("true") == 0){
                         collide(moveVector);
                         return;
                     }

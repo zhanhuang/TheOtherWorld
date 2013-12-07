@@ -42,7 +42,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // turn on display FPS
     director->setDisplayStats(false);
     
-    // set projection to 2D to prevent gaps in the tilemap
+    // set depth buffer and projection for our tilemap game
+    director->setDepthTest(true);
     director->setProjection(cocos2d::Director::Projection::_2D);
     
     // set FPS. the default value is 1.0/60 if you don't call this

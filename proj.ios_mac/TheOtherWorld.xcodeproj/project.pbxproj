@@ -76,8 +76,8 @@
 		A6AB19851850DC8E00D90418 /* terrain.png in Resources */ = {isa = PBXBuildFile; fileRef = A6AB19811850DC8E00D90418 /* terrain.png */; };
 		A6AB19861850DC8E00D90418 /* testLevel.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A6AB19821850DC8E00D90418 /* testLevel.tmx */; };
 		A6AB198E1850DDE800D90418 /* level.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A6AB198D1850DDE800D90418 /* level.tmx */; };
-		A6AB1991185114F200D90418 /* plants.png in Resources */ = {isa = PBXBuildFile; fileRef = A6AB198F185114F200D90418 /* plants.png */; };
 		A6AB1992185114F200D90418 /* symbol_tiles.png in Resources */ = {isa = PBXBuildFile; fileRef = A6AB1990185114F200D90418 /* symbol_tiles.png */; };
+		A6D6816E1852D349006C938C /* trees.png in Resources */ = {isa = PBXBuildFile; fileRef = A6D6816D1852D349006C938C /* trees.png */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -323,8 +323,8 @@
 		A6AB19811850DC8E00D90418 /* terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain.png; sourceTree = "<group>"; };
 		A6AB19821850DC8E00D90418 /* testLevel.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = testLevel.tmx; sourceTree = "<group>"; };
 		A6AB198D1850DDE800D90418 /* level.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = level.tmx; sourceTree = "<group>"; };
-		A6AB198F185114F200D90418 /* plants.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = plants.png; sourceTree = "<group>"; };
 		A6AB1990185114F200D90418 /* symbol_tiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = symbol_tiles.png; sourceTree = "<group>"; };
+		A6D6816D1852D349006C938C /* trees.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trees.png; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -558,7 +558,7 @@
 		A65A960E184BD9B800B87768 /* levels */ = {
 			isa = PBXGroup;
 			children = (
-				A6AB198F185114F200D90418 /* plants.png */,
+				A6D6816D1852D349006C938C /* trees.png */,
 				A6AB1990185114F200D90418 /* symbol_tiles.png */,
 				A6AB198D1850DDE800D90418 /* level.tmx */,
 				A6AB19811850DC8E00D90418 /* terrain.png */,
@@ -766,6 +766,7 @@
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
 				A65A9612184BDBF500B87768 /* tmw_desert_spacing.png in Resources */,
 				A68B05CA184CD9E200A75173 /* meta_tiles.png in Resources */,
+				A6D6816E1852D349006C938C /* trees.png in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				1AFAF8BC16D35E4900DB1158 /* CloseNormal.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
@@ -776,7 +777,6 @@
 				1AFAF8BD16D35E4900DB1158 /* CloseSelected.png in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
 				A65A9617184C193800B87768 /* arrow_down.png in Resources */,
-				A6AB1991185114F200D90418 /* plants.png in Resources */,
 				A65A9619184C193800B87768 /* arrow_right.png in Resources */,
 				5087E78017EB970100C73F5D /* Icon-114.png in Resources */,
 				1AFAF8BE16D35E4900DB1158 /* HelloWorld.png in Resources */,
