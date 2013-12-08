@@ -45,11 +45,15 @@ bool GameScene::init()
         // add tiled map as background
         _levelMap = TMXTiledMap::create("level.tmx");
         _levelMap->setScale(2.0);
-        
-        _background = _levelMap->getLayer("background");
         _meta = _levelMap->getLayer("Meta");
+        _movables = _levelMap->getLayer("Movables");
         _meta->setVisible(false);
-        _gameLayer->addChild(_levelMap, -1);
+        _gameLayer->addChild(_levelMap, -2);
+        
+        // add overlay tilemap for trees
+        _levelOverlay = TMXTiledMap::create("levelOverlay.tmx");
+        _levelOverlay->setScale(2.0);
+        _gameLayer->addChild(_levelOverlay, 1);
         
         TILE_SIZE = _levelMap->getTileSize().width;
         
@@ -67,8 +71,7 @@ bool GameScene::init()
         
         // add HUD
         _hud = HUD::create();
-//        _hud->setScale(2.0);
-        this->addChild(_hud, 1);
+        this->addChild(_hud, 2);
         
         this->alignViewPosition(Point(x,y));
         
@@ -112,9 +115,9 @@ void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
 	Touch* touch = touches[0];
 	Point location = touch->getLocation();
     auto tileCoord = tileCoordForPosition(location);
-    log("coord touched: %f, %f", tileCoord.x, tileCoord.y);
-    FiniteTimeAction* tintRed = TintTo::create(0, 255, 0, 0);
-    _background->getTileAt(tileCoord)->runAction(tintRed);
+    if(tileCoord.x >= _levelMap->getMapSize().width || tileCoord.y >= _levelMap->getMapSize().height || tileCoord.x < 0 || tileCoord.y < 0){
+        return;
+    }
     
 	// CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("effect.wav");
 }
@@ -149,25 +152,49 @@ void GameScene::updateGame(float dt)
                     break;
             }
             auto moveTarget = _player1->getPosition() + moveVector;
-            auto tileCoord = tileCoordForPosition(moveTarget);
+            auto tileCoordWalk = tileCoordForPosition(moveTarget);
             
-            // Check for out of border
-            if(tileCoord.x >= _levelMap->getMapSize().width || tileCoord.y >= _levelMap->getMapSize().height || tileCoord.x < 0 || tileCoord.y < 0){
+            // Check for out of border and collision
+            if(failBoundsCheck(_levelMap, tileCoordWalk) || passTilePropertyCheck(_levelMap, _meta, tileCoordWalk, "collidable")){
                 collide(moveVector);
                 return;
             }
+            if (_movables->getTileGIDAt(tileCoordWalk)){
+                if (!passTilePropertyCheck(_levelMap, _movables, tileCoordWalk, "push") || _hud->getActionPressed()) {
+                    collide(moveVector);
+                    return;
+                }
+            }
             
-            // detect collision & alter action if collided
-            log("coord: %f, %f", tileCoord.x, tileCoord.y);
-            int tileGID = _meta->getTileGIDAt(tileCoord);
-            if (tileGID) {
-                auto properties = _levelMap->getPropertiesForGID(tileGID);
-                if (properties) {
-                    auto collision = properties->valueForKey("collidable");
-                    if (collision && collision->compare("true") == 0){
-                        collide(moveVector);
-                        return;
-                    }
+            
+            // handle pushing / pulling object
+            Point itemTarget;
+            Point tileCoordItem;
+            Point tileCoordItemTarget;
+            if (_hud->getActionPressed()) {
+                // pull
+                itemTarget = _player1->getPosition() - moveVector;
+            } else{
+                // push
+                itemTarget = _player1->getPosition() + moveVector;
+            }
+            tileCoordItem = tileCoordForPosition(itemTarget);
+            tileCoordItemTarget = tileCoordForPosition(itemTarget + moveVector);
+            
+            if (passTilePropertyCheck(_levelMap, _movables, tileCoordItem, "push")) {
+                if(!_hud->getActionPressed()
+                   && (failBoundsCheck(_levelMap, tileCoordItemTarget)
+                    || passTilePropertyCheck(_levelMap, _meta, tileCoordItemTarget, "collidable")
+                    || _movables->getTileGIDAt(tileCoordItemTarget))){
+                    
+                    // item pushed collides
+                    collide(moveVector);
+                    return;
+                } else{
+                    FiniteTimeAction* actionPushed = MoveBy::create(0.5, moveVector/2);
+                    FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
+                    Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
+                    _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
                 }
             }
             
@@ -194,7 +221,34 @@ void GameScene::collide(Point moveVector){
     _player1->runAction(actionSeq);
 }
 
+bool GameScene::passTilePropertyCheck(cocos2d::TMXTiledMap *map ,cocos2d::TMXLayer *layer, cocos2d::Point coord, const char *property){
+    int tileGID = layer->getTileGIDAt(coord);
+    if (tileGID) {
+        auto properties = map->getPropertiesForGID(tileGID);
+        if (properties) {
+            auto val = properties->valueForKey(property);
+            if (val && val->compare("true") == 0){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool GameScene::failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord){
+    if(coord.x >= map->getMapSize().width || coord.y >= map->getMapSize().height || coord.x < 0 || coord.y < 0){
+        return true;
+    }
+    return false;
+}
+
 void GameScene::playerMoveFinished(){
     _playerIsMoving = false;
+}
+
+void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord){
+    int tileGID = layer->getTileGIDAt(fromCoord);
+    layer->setTileGID(tileGID, toCoord);
+    layer->removeTileAt(fromCoord);
 }
 

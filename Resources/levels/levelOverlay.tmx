@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="50" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="terrain" tilewidth="32" tileheight="32">
+  <image source="terrain.png" width="672" height="736"/>
+ </tileset>
+ <tileset firstgid="484" name="trees" tilewidth="32" tileheight="32">
+  <image source="trees.png" width="416" height="416"/>
+ </tileset>
+ <tileset firstgid="653" name="symbol_tiles" tilewidth="32" tileheight="32" spacing="1" margin="4">
+  <image source="symbol_tiles.png" width="410" height="304"/>
+ </tileset>
+ <tileset firstgid="761" name="meta tile" tilewidth="32" tileheight="32">
+  <image source="meta_tiles.png" width="67" height="34"/>
+  <tile id="0">
+   <properties>
+    <property name="collidable" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="Trees" width="20" height="50">
+  <data encoding="base64" compression="zlib">
+   eJzLZmJgyAFiaoEKoFmVFJinDNSrgqS/FchuI2CeHFBeHogVsKgzAIoZkugebaB6HSDWJUJfHFBNPAF1FkB5SyC2IsK8bCLiwxUo7wbE7kSYR0x8BAHlg4E4hAjziImPkQ44geHDRWIY4dMjBhQXJ9E8cvQQ6x5y/IfPPZS6dRSMguEA8NVj5ABS6jFiACn1GDGAlHqMGEBKPTYKRgE9AHp7llJATnuWmiCWibg2L7Egi4m4Ni+xoJyJ8j4IMmhhGm3zjoKBAwD0+xVU
+  </data>
+ </layer>
+</map>

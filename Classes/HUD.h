@@ -21,6 +21,14 @@ public:
     virtual bool init();
     
     int getDirection();
+    bool getActionPressed();
+    
+//    // TODO: implement better touch control
+//    int directionPressed;
+//    bool actionPressed;
+//	void onTouchesBegan(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+//	void onTouchesMoved(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
+//	void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     
     // implement the "static node()" method manually
     CREATE_FUNC(HUD);
@@ -30,7 +38,9 @@ protected:
     cocos2d::MenuItem *_downArrow;
     cocos2d::MenuItem *_leftArrow;
     cocos2d::MenuItem *_rightArrow;
+    cocos2d::MenuItem *_circle;
     cocos2d::Menu *_dpad;
+    cocos2d::Menu *_actionButton;
 };
 
 #endif /* defined(__TheOtherWorld__HUD__) */

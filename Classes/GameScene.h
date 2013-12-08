@@ -39,8 +39,9 @@ public:
 protected:
     int TILE_SIZE;
     cocos2d::TMXTiledMap *_levelMap;
-    cocos2d::TMXLayer *_background;
+    cocos2d::TMXTiledMap *_levelOverlay;
     cocos2d::TMXLayer *_meta;
+    cocos2d::TMXLayer *_movables;
     cocos2d::Sprite *_player1;
     cocos2d::Layer *_gameLayer;
     HUD *_hud;
@@ -49,6 +50,9 @@ protected:
     bool _playerIsMoving;
     void collide(cocos2d::Point moveVector);
     void playerMoveFinished();
+    void tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord);
+    bool passTilePropertyCheck(cocos2d::TMXTiledMap *map, cocos2d::TMXLayer *layer, cocos2d::Point coord, const char *property);
+    bool failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord);
 };
 
 #endif /* defined(__TheOtherWorld__GameScene__) */

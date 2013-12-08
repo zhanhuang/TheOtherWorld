@@ -2,6 +2,11 @@
 <map version="1.0" orientation="orthogonal" width="20" height="50" tilewidth="32" tileheight="32">
  <tileset firstgid="1" name="terrain" tilewidth="32" tileheight="32">
   <image source="terrain.png" width="672" height="736"/>
+  <tile id="479">
+   <properties>
+    <property name="push" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <tileset firstgid="484" name="trees" tilewidth="32" tileheight="32">
   <image source="trees.png" width="416" height="416"/>
@@ -57,19 +62,24 @@
    eJxjYBgFo2AUjIJRMApGwSgYBaNgFOAC3wfaAVAAcscaIF4LxOuAWBJJToYEc+YzItgHgfgNEB8G4ikkuAMXuAbE14H4BgnuIQcsYSSshliwBWiWCZA2hWJygRIS2xOIvaAYOc6wAWLCHdk85DjDB1iINA89zk7iCFtc7pyCZh4MEMo3yOGCrjYOiOOhGBuQxCKGHC71aHJcBNyCDdArLaMDAIJOJQc=
   </data>
  </layer>
- <layer name="Trees" width="20" height="50">
-  <data encoding="base64" compression="zlib">
-   eJzLZmJgyAFiaoEKoFmVFJinDNSrgqS/FchuI2CeHFBeHogVsKgzAIoZkugebaB6HSDWJUJfHFBNPAF1FkB5SyC2IsK8bCLiwxUo7wbE7kSYR0x8BAHlg4E4hAjziImPkQ44geHDRWIY4dMjBhQXJ9E8cvQQ6x5y/IfPPZS6dRSMguEA8NVj5ABS6jFiACn1GDGAlHqMGEBKPTYKRgE9AHp7llJATnt2FIyCUTA0AQA0Og/q
-  </data>
- </layer>
  <layer name="trees top items (items that go above trees)" width="20" height="50">
   <data encoding="base64" compression="zlib">
    eJxjYBi+YAnjQLuAMvB4iLt/FIyCUUA98JMGZm5HK2PODdMy5wwN/QUqp0Hmy9POilEwCkbBKBgFo2AUjCAAAIYpBqc=
   </data>
  </layer>
+ <layer name="Trees" width="20" height="50" visible="0">
+  <data encoding="base64" compression="zlib">
+   eJzLZmJgyAFiaoEKoFmVFJinDNSrgqS/FchuI2CeHFBeHogVsKgzAIoZkugebaB6HSDWJUJfHFBNPAF1FkB5SyC2IsK8bCLiwxUo7wbE7kSYR0x8BAHlg4E4hAjziImPkQ44geHDRWIY4dMjBhQXJ9E8cvQQ6x5y/IfPPZS6dRSMguEA8NVj5ABS6jFiACn1GDGAlHqMGEBKPTYKRgE9AHp7llJATnuWmiCWibg2L7Egi4m4Ni+xoJyJ8j4IMmhhGm3zjoKBAwD0+xVU
+  </data>
+ </layer>
  <layer name="Meta" width="20" height="50" opacity="0.4">
   <data encoding="base64" compression="zlib">
-   eJzlllEPgCAIhFv//w/71npoc064I860uq2HRD6hBlj2TaqS5J3+NaN9j5x1+fZ4f3rY767c5/2DjFbn1UyVj5o3Ih62FqO20ZpRa1YcKD4mB2RD8aKcPJ4iPtbG5Mnyevlm8kK8TA+18lLynpT6/Nn5fEVtHXl1tarYmTTyLpHhq3ktewVG9DyrtzI+yMb0fqYPR2YJmrXeXu/OYK3fnXWM1Lyaq+a9RQe71wDy
+   eJzllsEKgDAMQ8X//+HdxIMwytomNGNTAx509rVRu9rOQ6pW5N3xPcOeM7me2BHvTwf63JX3Re+got15PVMVo+bNqAftRXZttlb0mldHVh/iIVvL6s08RTxFfega4hPljfxWfGU8dq9F3hkj1TerkDr/aj9fke2jqK92FTqTZv5LVPhqnmXvwGDzeXurVxc7G6PrCM+LR+et5yPy79WR5WJmHSI1r+eqeW/RBcYYA+M=
+  </data>
+ </layer>
+ <layer name="Movables" width="20" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztziEBAAAIBDHoX5IoJECgQGzy3nwEAAAA/FY592m7tv3VZWIDhQ==
   </data>
  </layer>
  <objectgroup name="Objects" width="20" height="50">
