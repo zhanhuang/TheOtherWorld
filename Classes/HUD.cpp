@@ -41,10 +41,10 @@ bool HUD::init(){
     _leftArrow = MenuItemImage::create("arrow_left.png","arrow_left.png");
     _rightArrow = MenuItemImage::create("arrow_right.png","arrow_right.png");
     
-    _upArrow->setPosition(Point(0,32));
-    _downArrow->setPosition(Point(0,-32));
-    _leftArrow->setPosition(Point(-32,0));
-    _rightArrow->setPosition(Point(32,0));
+    _upArrow->setPosition(Point(0,48));
+    _downArrow->setPosition(Point(0,-48));
+    _leftArrow->setPosition(Point(-48,0));
+    _rightArrow->setPosition(Point(48,0));
     
     _dpad = Menu::create();
     _dpad->addChild(_upArrow);
