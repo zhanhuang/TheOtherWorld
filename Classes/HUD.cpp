@@ -78,11 +78,11 @@ int HUD::getDirection(){
     return 0;
 }
 
-bool HUD::getActionPressed(){
+int HUD::getActionPressed(){
     if (_circle && _circle->isSelected()) {
-        return true;
+        return 1;
     }
-    return false;
+    return 0;
 }
 
 //void HUD::onTouchesBegan(const std::vector<Touch*>& touches, Event* event){

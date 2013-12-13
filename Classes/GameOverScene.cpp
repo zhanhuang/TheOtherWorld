@@ -26,6 +26,8 @@
 #include "GameOverScene.h"
 #include "GameScene.h"
 
+#include "GCConnector.h"
+
 using namespace cocos2d;
 
 bool GameOverScene::init()

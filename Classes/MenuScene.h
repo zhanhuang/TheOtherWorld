@@ -26,6 +26,8 @@ public:
     
     void menuStartCallback(Object* sender);
     
+    void menuConnectCallback(Object* sender);
+    
     // implement the "static node()" method manually
     CREATE_FUNC(MenuScene);
 };

@@ -21,7 +21,7 @@ public:
     virtual bool init();
     
     int getDirection();
-    bool getActionPressed();
+    int getActionPressed();
     
 //    // TODO: implement better touch control
 //    int directionPressed;

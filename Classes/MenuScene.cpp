@@ -12,7 +12,6 @@
 
 USING_NS_CC;
 
-
 Scene* MenuScene::scene()
 {
     // 'scene' is an autorelease object
@@ -61,17 +60,27 @@ bool MenuScene::init()
     /////////////////////////////
     // 3. add your codes below...
     
-    // Game Start Button
-    
-    auto startLabel = LabelTTF::create("Start Game", "Arial", TITLE_FONT_SIZE);
+    // Tutorial Start Button
+    auto startLabel = LabelTTF::create("Start Tutorial", "Arial", TITLE_FONT_SIZE);
     startLabel->setColor(Color3B(255, 255, 255));
     auto startItem = MenuItemLabel::create(
                                            startLabel,
                                            CC_CALLBACK_1(MenuScene::menuStartCallback, this));
-    // position the label on the center of the screen
     startItem->setPosition(Point(origin.x + visibleSize.width/2,
-                                  origin.y + visibleSize.height/2));
-    auto startMenu = Menu::create(startItem, NULL);
+                                 origin.y + visibleSize.height/2 +
+                                 startLabel->getContentSize().height));
+    
+    auto connectLabel = LabelTTF::create("Start Game", "Arial", TITLE_FONT_SIZE);
+    connectLabel->setColor(Color3B(255, 255, 255));
+    auto connectItem = MenuItemLabel::create(
+                                           connectLabel,
+                                           CC_CALLBACK_1(MenuScene::menuConnectCallback, this));
+    connectItem->setPosition(Point(origin.x + visibleSize.width/2,
+                                 origin.y + visibleSize.height/2 -
+                                 startLabel->getContentSize().height));
+    
+    // position the label on the center of the screen
+    auto startMenu = Menu::create(startItem, connectItem, NULL);
     startMenu->setPosition(Point::ZERO);
     
     // add the label as a child to this layer
@@ -90,6 +99,13 @@ void MenuScene::menuCloseCallback(Object* sender)
 }
 
 void MenuScene::menuStartCallback(Object* sender)
+{
+    auto newGameScene = GameScene::create();
+    Director::getInstance()->replaceScene(newGameScene);
+}
+
+
+void MenuScene::menuConnectCallback(Object* sender)
 {
     auto newGameScene = GameScene::create();
     Director::getInstance()->replaceScene(newGameScene);

@@ -8,6 +8,7 @@
 
 #include "GameScene.h"
 #include "GameOverScene.h"
+#include "GCConnector.h"
 //#include "SimpleAudioEngine.h"
 
 
@@ -84,17 +85,19 @@ bool GameScene::init()
             }
         }
         
+        isFirstLaunch = true;
+        showStartGameLayer();
+        
+//		// use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
+//		this->schedule( schedule_selector(GameScene::updateGame));
+        
+        
 //        // add touch listener
 //        auto dispatcher = Director::getInstance()->getEventDispatcher();
 //        auto listener = EventListenerTouchAllAtOnce::create();
 //        listener->onTouchesEnded = CC_CALLBACK_2(GameScene::onTouchesEnded, this);
 //        dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-        
-		// use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
-		this->schedule( schedule_selector(GameScene::updateGame));
-        
-        
-		// CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("background-music.wav", true);
+//        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("background-music.wav", true);
         
 		bRet = true;
 	} while (0);
@@ -130,8 +133,13 @@ Point GameScene::tileCoordForPosition(Point position) {
 
 void GameScene::updateGame(float dt)
 {
+    
     if (!_playerIsMoving) {
+        int action = _hud->getActionPressed();
         int direction = _hud->getDirection();
+        if (action || direction){
+            sendData(action, direction);
+        }
         
         if (direction != 0) {
             auto moveVector = Point::ZERO;
@@ -251,4 +259,215 @@ void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCo
     layer->setTileGID(tileGID, toCoord);
     layer->removeTileAt(fromCoord);
 }
+
+
+
+/***
+ * AppWarp Helper Methods
+ */
+
+void GameScene::showStartGameLayer()
+{
+    
+    // Get the dimensions of the window for calculation purposes
+    Size winSize = Director::getInstance()->getWinSize();
+    
+    startGameLayer = StartGameLayer::create();
+    addChild(startGameLayer);
+    
+    LabelTTF *buttonTitle = LabelTTF::create("Start Game", "Marker Felt", 30);
+    buttonTitle->setColor(Color3B::BLACK);
+    
+    MenuItemLabel *startGameButton = MenuItemLabel::create(buttonTitle, CC_CALLBACK_1(GameScene::connectToAppWarp, this));
+    startGameButton->setPosition(Point(winSize.width/2,winSize.height/2));
+    Menu *pMenu = Menu::create(startGameButton,NULL);
+    pMenu->setPosition(Point::ZERO);
+    startGameLayer->addChild(pMenu, 1);
+}
+
+void GameScene::removeStartGameLayer()
+{
+    removeChild(startGameLayer,true);
+}
+
+std::string genRandom()
+{
+	std::string charStr;
+	srand (time(NULL));
+    
+	for (int i = 0; i < 10; ++i) {
+		charStr += (char)(65+(rand() % (26)));
+	}
+    
+	return charStr;
+}
+
+void GameScene::connectToAppWarp(Object* pSender)
+{
+    isConnected = false;
+    AppWarp::Client *warpClientRef;
+    if (isFirstLaunch)
+    {
+        isFirstLaunch = !isFirstLaunch;
+        AppWarp::Client::initialize(APPWARP_APP_KEY,APPWARP_SECRET_KEY);
+        warpClientRef = AppWarp::Client::getInstance();
+        warpClientRef->setRecoveryAllowance(60);
+        warpClientRef->setConnectionRequestListener(this);
+        warpClientRef->setNotificationListener(this);
+        warpClientRef->setRoomRequestListener(this);
+        warpClientRef->setZoneRequestListener(this);
+        userName = genRandom();
+        warpClientRef->connect(userName);
+    }
+    else
+    {
+        AppWarp::Client::getInstance()->connect(userName);
+    }
+}
+
+
+void GameScene::onConnectDone(int res)
+{
+    if (res==AppWarp::ResultCode::success)
+    {
+        unscheduleRecover();
+        printf("\nonConnectDone .. SUCCESS..session=%d\n",AppWarp::AppWarpSessionID);
+        AppWarp::Client *warpClientRef;
+        warpClientRef = AppWarp::Client::getInstance();
+        warpClientRef->joinRoom(ROOM_ID);
+    }
+    else if (res==AppWarp::ResultCode::success_recovered)
+    {
+        unscheduleRecover();
+        removeStartGameLayer();
+        printf("\nonConnectDone .. SUCCESS with success_recovered..session=%d\n",AppWarp::AppWarpSessionID);
+    }
+    else if (res==AppWarp::ResultCode::connection_error_recoverable)
+    {
+        scheduleRecover();
+        printf("\nonConnectDone .. FAILED..connection_error_recoverable..session=%d\n",AppWarp::AppWarpSessionID);
+    }
+    else if (res==AppWarp::ResultCode::bad_request)
+    {
+        unscheduleRecover();
+        printf("\nonConnectDone .. FAILED with bad request..session=%d\n",AppWarp::AppWarpSessionID);
+    }
+    else
+    {
+        unscheduleRecover();
+        printf("\nonConnectDone .. FAILED with unknown reason..session=%d\n",AppWarp::AppWarpSessionID);
+    }
+}
+
+void GameScene::scheduleRecover()
+{
+    printf("\nHelloWorld::scheduleRecover");
+    this->schedule(schedule_selector(GameScene::recover), 5.0f);
+    
+    showReconnectingLayer("Reconnecting ...");
+}
+
+void GameScene::unscheduleRecover()
+{
+    printf("\nHelloWorld::unscheduleRecover");
+    unschedule(schedule_selector(GameScene::recover));
+}
+
+void GameScene::recover(float dt)
+{
+    printf("\nHelloWorld::recover");
+    AppWarp::Client::getInstance()->recoverConnection();
+}
+
+void GameScene::showReconnectingLayer(std::string message)
+{
+    
+    // Get the dimensions of the window for calculation purposes
+    Size winSize = Director::getInstance()->getWinSize();
+    
+    startGameLayer = StartGameLayer::create();
+    startGameLayer->setColor(Color3B(0, 0, 0));
+    startGameLayer->setOpacity(50);
+    addChild(startGameLayer);
+    
+    LabelTTF *buttonTitle = LabelTTF::create(message.c_str(), "Marker Felt", 30);
+    buttonTitle->setColor(Color3B::BLACK);
+    startGameLayer->addChild(buttonTitle);
+    buttonTitle->setPosition(Point(winSize.width/2,winSize.height/2));
+    
+}
+
+void GameScene::onJoinRoomDone(AppWarp::room revent)
+{
+    if (revent.result==0)
+    {
+        printf("\nonJoinRoomDone .. SUCCESS\n");
+        AppWarp::Client *warpClientRef;
+        warpClientRef = AppWarp::Client::getInstance();
+        warpClientRef->subscribeRoom(ROOM_ID);
+        
+        // use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
+		this->schedule( schedule_selector(GameScene::updateGame));
+        
+        removeStartGameLayer();
+    }
+    else
+        printf("\nonJoinRoomDone .. FAILED\n");
+}
+
+void GameScene::onSubscribeRoomDone(AppWarp::room revent)
+{
+    if (revent.result==0)
+    {
+        printf("\nonSubscribeRoomDone .. SUCCESS\n");
+    }
+    else
+        printf("\nonSubscribeRoomDone .. FAILED\n");
+}
+
+
+void GameScene::sendData(int action, int direction)
+{
+    AppWarp::Client *warpClientRef;
+	warpClientRef = AppWarp::Client::getInstance();
+    
+    std::stringstream str;
+    str << action << "x" << direction;
+    warpClientRef->sendChat(str.str());
+}
+
+
+
+void GameScene::onChatReceived(AppWarp::chat chatevent)
+{
+    printf("onChatReceived..");
+    if(chatevent.sender != userName)
+	{
+		std::size_t loc = chatevent.chat.find('x');
+		std::string str1 = chatevent.chat.substr(0,loc);
+		std::string str2 = chatevent.chat.substr(loc+1,chatevent.chat.length());
+		int action = std::atoi(str1.c_str());
+		int direction = std::atoi(str2.c_str());
+        printf("chat is : %d,%d\n",action,direction);
+    }
+}
+
+
+void GameScene::onUserPaused(std::string user,std::string locId,bool isLobby)
+{
+    //    printf("\nonUserPaused...user=%s",user.c_str());
+    //    printf("\nonUserPaused...locId=%s",locId.c_str());
+    std::string message = "Other user connection lost";
+    this->unschedule( schedule_selector(GameScene::updateGame));
+    showReconnectingLayer(message);
+}
+
+void GameScene::onUserResumed(std::string user,std::string locId,bool isLobby)
+{
+    //    printf("\nonUserResumed...user=%s",user.c_str());
+    //    printf("\nonUserResumed...locId=%s",locId.c_str());
+    removeStartGameLayer();
+    this->schedule( schedule_selector(GameScene::updateGame));
+}
+
 
