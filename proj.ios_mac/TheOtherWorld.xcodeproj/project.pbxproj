@@ -98,9 +98,6 @@
 		A6D6816E1852D349006C938C /* trees.png in Resources */ = {isa = PBXBuildFile; fileRef = A6D6816D1852D349006C938C /* trees.png */; };
 		A6D6817218543364006C938C /* levelOverlay.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A6D6817118543364006C938C /* levelOverlay.tmx */; };
 		A6D6817418550F67006C938C /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = A6D6817318550F67006C938C /* circle.png */; };
-		A6D6817C185531EC006C938C /* libTestFlight.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A6D68176185531EC006C938C /* libTestFlight.a */; };
-		A6D6817D185531ED006C938C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = A6D68177185531EC006C938C /* README.md */; };
-		A6D6817E185531ED006C938C /* release_notes.md in Resources */ = {isa = PBXBuildFile; fileRef = A6D68178185531EC006C938C /* release_notes.md */; };
 		A6D681801855B87A006C938C /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6D6817F1855B87A006C938C /* GameKit.framework */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
@@ -381,12 +378,6 @@
 		A6D6816D1852D349006C938C /* trees.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trees.png; sourceTree = "<group>"; };
 		A6D6817118543364006C938C /* levelOverlay.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = levelOverlay.tmx; sourceTree = "<group>"; };
 		A6D6817318550F67006C938C /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = circle.png; path = sprites/circle.png; sourceTree = "<group>"; };
-		A6D68176185531EC006C938C /* libTestFlight.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libTestFlight.a; sourceTree = "<group>"; };
-		A6D68177185531EC006C938C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		A6D68178185531EC006C938C /* release_notes.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = release_notes.md; sourceTree = "<group>"; };
-		A6D68179185531EC006C938C /* TestFlight+AsyncLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+AsyncLogging.h"; sourceTree = "<group>"; };
-		A6D6817A185531EC006C938C /* TestFlight+ManualSessions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestFlight+ManualSessions.h"; sourceTree = "<group>"; };
-		A6D6817B185531EC006C938C /* TestFlight.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestFlight.h; sourceTree = "<group>"; };
 		A6D6817F1855B87A006C938C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
@@ -405,7 +396,6 @@
 				1AC6FB2E180E99EB004C840B /* libbox2d iOS.a in Frameworks */,
 				1AC6FB2F180E99EB004C840B /* libchipmunk iOS.a in Frameworks */,
 				1AC6FB30180E99EB004C840B /* libcocos2dx iOS.a in Frameworks */,
-				A6D6817C185531EC006C938C /* libTestFlight.a in Frameworks */,
 				1AC6FB31180E99EB004C840B /* libcocos2dx-extensions iOS.a in Frameworks */,
 				1AC6FB32180E99EB004C840B /* libCocosDenshion iOS.a in Frameworks */,
 				D6B0611B1803AB670077942B /* CoreMotion.framework in Frameworks */,
@@ -535,7 +525,6 @@
 				A62AD11A185AEF9A00F66D7F /* curl */,
 				1ACB3243164770DE00914215 /* libcurl.a */,
 				A6D6817F1855B87A006C938C /* GameKit.framework */,
-				A6D68175185531EC006C938C /* TestFlightSDK2.0.2 */,
 				D6B0611A1803AB670077942B /* CoreMotion.framework */,
 				503AE11A17EB9C5A00D1A890 /* IOKit.framework */,
 				503AE11117EB99EE00D1A890 /* libcurl.dylib */,
@@ -684,19 +673,6 @@
 				A65A9611184BDBF500B87768 /* tmw_desert_spacing.png */,
 			);
 			path = levels;
-			sourceTree = "<group>";
-		};
-		A6D68175185531EC006C938C /* TestFlightSDK2.0.2 */ = {
-			isa = PBXGroup;
-			children = (
-				A6D68176185531EC006C938C /* libTestFlight.a */,
-				A6D68177185531EC006C938C /* README.md */,
-				A6D68178185531EC006C938C /* release_notes.md */,
-				A6D68179185531EC006C938C /* TestFlight+AsyncLogging.h */,
-				A6D6817A185531EC006C938C /* TestFlight+ManualSessions.h */,
-				A6D6817B185531EC006C938C /* TestFlight.h */,
-			);
-			path = TestFlightSDK2.0.2;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -901,7 +877,6 @@
 				A62AD120185AEF9A00F66D7F /* mprintf.h in Resources */,
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
 				A65A9612184BDBF500B87768 /* tmw_desert_spacing.png in Resources */,
-				A6D6817E185531ED006C938C /* release_notes.md in Resources */,
 				A68B05CA184CD9E200A75173 /* meta_tiles.png in Resources */,
 				A6D6816E1852D349006C938C /* trees.png in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
@@ -929,7 +904,6 @@
 				A6AB1992185114F200D90418 /* symbol_tiles.png in Resources */,
 				A62AD11F185AEF9A00F66D7F /* easy.h in Resources */,
 				A65A9618184C193800B87768 /* arrow_left.png in Resources */,
-				A6D6817D185531ED006C938C /* README.md in Resources */,
 				5087E78417EB970100C73F5D /* Icon-57.png in Resources */,
 				5087E77E17EB970100C73F5D /* Default.png in Resources */,
 				A62AD121185AEF9A00F66D7F /* multi.h in Resources */,

@@ -8,7 +8,6 @@
 
 #include "GameScene.h"
 #include "GameOverScene.h"
-#include "GCConnector.h"
 //#include "SimpleAudioEngine.h"
 
 
