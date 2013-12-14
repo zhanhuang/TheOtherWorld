@@ -13,12 +13,10 @@ bool StartGameLayer::init()
 {
     //////////////////////////////
     // 1. super init first
-    if ( !LayerColor::initWithColor(cocos2d::Color4B(255, 255, 255, 255)))
+    if ( !LayerColor::initWithColor(cocos2d::Color4B(0, 0, 0, 127)))
     {
         return false;
     }
-    
-    setTouchEnabled(true);
     
     return true;
 }

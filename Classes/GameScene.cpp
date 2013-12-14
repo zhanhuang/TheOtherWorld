@@ -7,7 +7,6 @@
 //
 
 #include "GameScene.h"
-#include "GameOverScene.h"
 //#include "SimpleAudioEngine.h"
 
 
@@ -57,23 +56,39 @@ bool GameScene::init()
         
         TILE_SIZE = _levelMap->getTileSize().width;
         
-        // add player
+        // add players
         TMXObjectGroup *mapObjectGroup = _levelMap->getObjectGroup("Objects");
-        Dictionary *spawnPoint = mapObjectGroup->getObject("SpawnPoint");
-        int x = spawnPoint->valueForKey("x")->intValue();
-        int y = spawnPoint->valueForKey("y")->intValue();
         
-        _player1 = Sprite::create("Player.png");
-        _player1->setPosition(Point(x,y));
-        _player1->setScale(2.0);
-        _playerIsMoving = false;
-        _gameLayer->addChild(_player1);
+        Dictionary *spawnPoint0 = mapObjectGroup->getObject("SpawnPoint0");
+        int x0 = spawnPoint0->valueForKey("x")->intValue();
+        int y0 = spawnPoint0->valueForKey("y")->intValue();
+        SpriteBatchNode *batchNodeMan = SpriteBatchNode::create("man.png");
+        _gameLayer->addChild(batchNodeMan);
+        SpriteFrameCache::getInstance()->addSpriteFramesWithFile("man.plist");
+        _man = Player::createWithSpriteFrameName("man_front0.png");
+        _man->setScale(2.0);
+        batchNodeMan->addChild(_man);
+        _man->setPosition(Point(x0,y0));
+        
+        Dictionary *spawnPoint1 = mapObjectGroup->getObject("SpawnPoint1");
+        int x1 = spawnPoint1->valueForKey("x")->intValue();
+        int y1 = spawnPoint1->valueForKey("y")->intValue();
+        SpriteBatchNode *batchNodeGirl = SpriteBatchNode::create("girl.png");
+        _gameLayer->addChild(batchNodeGirl);
+        SpriteFrameCache::getInstance()->addSpriteFramesWithFile("girl.plist");
+        _girl = Player::createWithSpriteFrameName("girl_front0.png");
+        _girl->setScale(2.0);
+        batchNodeGirl->addChild(_girl);
+        _girl->setPosition(Point(x1,y1));
+        
         
         // add HUD
         _hud = HUD::create();
         this->addChild(_hud, 2);
         
-        this->alignViewPosition(Point(x,y));
+        
+        // align with the girl first. change when game actually starts
+        this->alignViewPosition(Point(x1,y1));
         
         // add objects
         Array *allObjects = mapObjectGroup->getObjects();
@@ -105,9 +120,16 @@ bool GameScene::init()
 	return bRet;
 }
 
+
 void GameScene::alignViewPosition(Point playerPosition){
     auto visibleSize = Director::getInstance()->getVisibleSize();
     _gameLayer->setPosition(Point(visibleSize.width/2 - playerPosition.x, visibleSize.height/2 - playerPosition.y));
+}
+
+void GameScene::startGame(){
+    this->alignViewPosition(_controlledPlayer->getPosition());
+    // use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
+    this->schedule( schedule_selector(GameScene::updateGame));
 }
 
 // cpp with cocos2d-x
@@ -132,100 +154,115 @@ Point GameScene::tileCoordForPosition(Point position) {
 
 void GameScene::updateGame(float dt)
 {
-    
-    if (!_playerIsMoving) {
+    if (!_controlledPlayer->isMoving) {
         int action = _hud->getActionPressed();
         int direction = _hud->getDirection();
         if (action || direction){
-            sendData(action, direction);
-        }
-        
-        if (direction != 0) {
-            auto moveVector = Point::ZERO;
-            switch (direction) {
-                case 1:
-                    moveVector = Point(0,TILE_SIZE);
-                    break;
-                case 2:
-                    moveVector = Point(0,-TILE_SIZE);
-                    break;
-                case 3:
-                    moveVector = Point(-TILE_SIZE,0);
-                    break;
-                case 4:
-                    moveVector = Point(TILE_SIZE,0);
-                    break;
-                default:
-                    break;
-            }
-            auto moveTarget = _player1->getPosition() + moveVector;
-            auto tileCoordWalk = tileCoordForPosition(moveTarget);
-            
-            // Check for out of border and collision
-            if(failBoundsCheck(_levelMap, tileCoordWalk) || passTilePropertyCheck(_levelMap, _meta, tileCoordWalk, "collidable")){
-                collide(moveVector);
-                return;
-            }
-            if (_movables->getTileGIDAt(tileCoordWalk)){
-                if (!passTilePropertyCheck(_levelMap, _movables, tileCoordWalk, "push") || _hud->getActionPressed()) {
-                    collide(moveVector);
-                    return;
-                }
-            }
-            
-            
-            // handle pushing / pulling object
-            Point itemTarget;
-            Point tileCoordItem;
-            Point tileCoordItemTarget;
-            if (_hud->getActionPressed()) {
-                // pull
-                itemTarget = _player1->getPosition() - moveVector;
-            } else{
-                // push
-                itemTarget = _player1->getPosition() + moveVector;
-            }
-            tileCoordItem = tileCoordForPosition(itemTarget);
-            tileCoordItemTarget = tileCoordForPosition(itemTarget + moveVector);
-            
-            if (passTilePropertyCheck(_levelMap, _movables, tileCoordItem, "push")) {
-                if(!_hud->getActionPressed()
-                   && (failBoundsCheck(_levelMap, tileCoordItemTarget)
-                    || passTilePropertyCheck(_levelMap, _meta, tileCoordItemTarget, "collidable")
-                    || _movables->getTileGIDAt(tileCoordItemTarget))){
-                    
-                    // item pushed collides
-                    collide(moveVector);
-                    return;
-                } else{
-                    FiniteTimeAction* actionPushed = MoveBy::create(0.5, moveVector/2);
-                    FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
-                    Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
-                    _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
-                }
-            }
-            
-            // Create the action
-            FiniteTimeAction* actionMove = MoveBy::create(0.5, moveVector);
-            FiniteTimeAction* actionMoveScreen = MoveBy::create(0.5, -moveVector);
-            FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
-            Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
-            
-            // Run the action, adjust camera & HUD
-            _gameLayer->runAction(actionMoveScreen);
-            _player1->runAction(actionSeq);
-            _playerIsMoving = true;
+            sendData(action, direction, _controlledPlayer->getPosition().x, _controlledPlayer->getPosition().y);
         }
     }
 }
 
-void GameScene::collide(Point moveVector){
-    _playerIsMoving = true;
-    FiniteTimeAction* actionMove =MoveBy::create(0.2, moveVector/4);
-    FiniteTimeAction* actionMove2 =MoveBy::create(0.2, -moveVector/4);
-    FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this));
+void GameScene::processPlayerMove(Player* player, int action, int direction){
+    if (player->isMoving) {
+        return;
+    }
+    
+    if (direction != 0) {
+        player->faceDirection(direction);
+        Point moveVector = moveVectorFromDirection(direction);
+        auto moveTarget = player->getPosition() + moveVector;
+        auto tileCoordWalk = tileCoordForPosition(moveTarget);
+        
+        // Check for out of border and collision
+        if(failBoundsCheck(_levelMap, tileCoordWalk) || passTilePropertyCheck(_levelMap, _meta, tileCoordWalk, "collidable")){
+            collide(player, direction);
+            return;
+        }
+        if (_movables->getTileGIDAt(tileCoordWalk)){
+            if (!passTilePropertyCheck(_levelMap, _movables, tileCoordWalk, "push") || _hud->getActionPressed()) {
+                collide(player, direction);
+                return;
+            }
+        }
+        
+        
+        // handle pushing / pulling object
+        Point itemTarget;
+        Point tileCoordItem;
+        Point tileCoordItemTarget;
+        if (_hud->getActionPressed()) {
+            // pull
+            itemTarget = player->getPosition() - moveVector;
+        } else{
+            // push
+            itemTarget = player->getPosition() + moveVector;
+        }
+        tileCoordItem = tileCoordForPosition(itemTarget);
+        tileCoordItemTarget = tileCoordForPosition(itemTarget + moveVector);
+        
+        // check for item pushed collision
+        if (passTilePropertyCheck(_levelMap, _movables, tileCoordItem, "push")) {
+            if(!_hud->getActionPressed()
+               && (failBoundsCheck(_levelMap, tileCoordItemTarget)
+                   || passTilePropertyCheck(_levelMap, _meta, tileCoordItemTarget, "collidable")
+                   || _movables->getTileGIDAt(tileCoordItemTarget))){
+                   
+                   // item pushed collides
+                   collide(player, direction);
+                   return;
+               } else{
+                   FiniteTimeAction* actionPushed = MoveBy::create(MOVE_TIME-0.1, moveVector/2);
+                   FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
+                   Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
+                   _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
+               }
+        }
+        
+        // Create player movement action
+        FiniteTimeAction* actionMove = MoveBy::create(MOVE_TIME, moveVector);
+        FiniteTimeAction* actionMoveScreen = MoveBy::create(MOVE_TIME, -moveVector);
+        FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player));
+        Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
+        
+        // move player, move camera & HUD if it's controlled player
+        if(player == _controlledPlayer){
+            _gameLayer->runAction(actionMoveScreen);
+        }
+        player->runAction(actionSeq);
+        player->animateMove(direction);
+        player->isMoving = true;
+    }
+}
+
+Point GameScene::moveVectorFromDirection(int direction){
+    switch (direction) {
+        case 1:
+            return Point(0,TILE_SIZE);
+            break;
+        case 2:
+            return Point(0,-TILE_SIZE);
+            break;
+        case 3:
+            return Point(-TILE_SIZE,0);
+            break;
+        case 4:
+            return Point(TILE_SIZE,0);
+            break;
+        default:
+            break;
+    }
+    return Point::ZERO;
+}
+
+void GameScene::collide(Player* player, int direction){
+    Point moveVector = moveVectorFromDirection(direction);
+    player->isMoving = true;
+    FiniteTimeAction* actionMove = MoveBy::create((MOVE_TIME-0.1)/2, moveVector/4);
+    FiniteTimeAction* actionMove2 = MoveBy::create((MOVE_TIME-0.1)/2, -moveVector/4);
+    FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player));
     Sequence* actionSeq = Sequence::create(actionMove, actionMove2, actionMoveDone, NULL);
-    _player1->runAction(actionSeq);
+    player->runAction(actionSeq);
 }
 
 bool GameScene::passTilePropertyCheck(cocos2d::TMXTiledMap *map ,cocos2d::TMXLayer *layer, cocos2d::Point coord, const char *property){
@@ -249,8 +286,8 @@ bool GameScene::failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord)
     return false;
 }
 
-void GameScene::playerMoveFinished(){
-    _playerIsMoving = false;
+void GameScene::playerMoveFinished(Player* player){
+    player->isMoving = false;
 }
 
 void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord){
@@ -259,7 +296,10 @@ void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCo
     layer->removeTileAt(fromCoord);
 }
 
-
+void GameScene::correctPlayerState(Player* player, float xpos, float ypos){
+    player->setPosition(Point(xpos, ypos));
+    player->isMoving = false;
+}
 
 /***
  * AppWarp Helper Methods
@@ -267,15 +307,14 @@ void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCo
 
 void GameScene::showStartGameLayer()
 {
-    
     // Get the dimensions of the window for calculation purposes
     Size winSize = Director::getInstance()->getWinSize();
     
     startGameLayer = StartGameLayer::create();
-    addChild(startGameLayer);
+    addChild(startGameLayer, 100);
     
     LabelTTF *buttonTitle = LabelTTF::create("Start Game", "Marker Felt", 30);
-    buttonTitle->setColor(Color3B::BLACK);
+    buttonTitle->setColor(Color3B::WHITE);
     
     MenuItemLabel *startGameButton = MenuItemLabel::create(buttonTitle, CC_CALLBACK_1(GameScene::connectToAppWarp, this));
     startGameButton->setPosition(Point(winSize.width/2,winSize.height/2));
@@ -324,7 +363,6 @@ void GameScene::connectToAppWarp(Object* pSender)
     }
 }
 
-
 void GameScene::onConnectDone(int res)
 {
     if (res==AppWarp::ResultCode::success)
@@ -333,7 +371,10 @@ void GameScene::onConnectDone(int res)
         printf("\nonConnectDone .. SUCCESS..session=%d\n",AppWarp::AppWarpSessionID);
         AppWarp::Client *warpClientRef;
         warpClientRef = AppWarp::Client::getInstance();
-        warpClientRef->joinRoom(ROOM_ID);
+        // join room with 1 player. Second player to join a room is man
+        isMan = true;
+        warpClientRef->joinRoomInUserRange(1, 1, false);
+        
     }
     else if (res==AppWarp::ResultCode::success_recovered)
     {
@@ -390,7 +431,7 @@ void GameScene::showReconnectingLayer(std::string message)
     addChild(startGameLayer);
     
     LabelTTF *buttonTitle = LabelTTF::create(message.c_str(), "Marker Felt", 30);
-    buttonTitle->setColor(Color3B::BLACK);
+    buttonTitle->setColor(Color3B::WHITE);
     startGameLayer->addChild(buttonTitle);
     buttonTitle->setPosition(Point(winSize.width/2,winSize.height/2));
     
@@ -403,15 +444,35 @@ void GameScene::onJoinRoomDone(AppWarp::room revent)
         printf("\nonJoinRoomDone .. SUCCESS\n");
         AppWarp::Client *warpClientRef;
         warpClientRef = AppWarp::Client::getInstance();
-        warpClientRef->subscribeRoom(ROOM_ID);
-        
-        // use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
-		this->schedule( schedule_selector(GameScene::updateGame));
-        
+        warpClientRef->subscribeRoom(revent.roomId);
+        if (isMan) {
+            _controlledPlayer = _man;
+            _otherPlayer = _girl;
+        }else{
+            _controlledPlayer = _girl;
+            _otherPlayer = _man;
+        }
+        this->startGame();
         removeStartGameLayer();
     }
-    else
+    else{
         printf("\nonJoinRoomDone .. FAILED\n");
+        if (isMan) {
+            printf("\nNo Player found in rooms. Joining new room...\n");
+            isMan = false;
+            AppWarp::Client *warpClientRef;
+            warpClientRef = AppWarp::Client::getInstance();
+            // join room with no players. First player to join a room is girl
+            warpClientRef->joinRoomInUserRange(0, 0, false);
+        }else{
+            printf("\nNo Empty Room. Joining room with player...\n");
+            isMan = true;
+            AppWarp::Client *warpClientRef;
+            warpClientRef = AppWarp::Client::getInstance();
+            // join room with 1 player. Second player to join a room is man
+            warpClientRef->joinRoomInUserRange(1, 1, false);
+        }
+    }
 }
 
 void GameScene::onSubscribeRoomDone(AppWarp::room revent)
@@ -424,33 +485,44 @@ void GameScene::onSubscribeRoomDone(AppWarp::room revent)
         printf("\nonSubscribeRoomDone .. FAILED\n");
 }
 
-
-void GameScene::sendData(int action, int direction)
+void GameScene::sendData(int action, int direction, float xpos, float ypos)
 {
     AppWarp::Client *warpClientRef;
 	warpClientRef = AppWarp::Client::getInstance();
     
     std::stringstream str;
-    str << action << "x" << direction;
+    str << action << "d" << direction << "x" << xpos << "y" << ypos;
     warpClientRef->sendChat(str.str());
 }
-
-
 
 void GameScene::onChatReceived(AppWarp::chat chatevent)
 {
     printf("onChatReceived..");
-    if(chatevent.sender != userName)
-	{
-		std::size_t loc = chatevent.chat.find('x');
-		std::string str1 = chatevent.chat.substr(0,loc);
-		std::string str2 = chatevent.chat.substr(loc+1,chatevent.chat.length());
-		int action = std::atoi(str1.c_str());
-		int direction = std::atoi(str2.c_str());
-        printf("chat is : %d,%d\n",action,direction);
+    Player* player;
+    if(chatevent.sender != userName){
+        player = _otherPlayer;
+    }else{
+        player = _controlledPlayer;
     }
+    
+    std::size_t locd = chatevent.chat.find('d');
+    std::size_t locx = chatevent.chat.find('x');
+    std::size_t locy = chatevent.chat.find('y');
+    std::string str1 = chatevent.chat.substr(0,locd);
+    std::string str2 = chatevent.chat.substr(locd+1,locx);
+    std::string str3 = chatevent.chat.substr(locx+1,locy);
+    std::string str4 = chatevent.chat.substr(locy+1,chatevent.chat.length());
+    int action = std::atoi(str1.c_str());
+    int direction = std::atoi(str2.c_str());
+    float xpos = std::atoi(str3.c_str());
+    float ypos = std::atoi(str4.c_str());
+    printf("chat is : action:%d,direction:%d,x:%f,y:%f\n",action,direction,xpos,ypos);
+    if (_otherPlayer->isMoving) {
+        // Lag. Correct location of other player first.
+        this->correctPlayerState(player, xpos,ypos);
+    }
+    this->processPlayerMove(player, action, direction);
 }
-
 
 void GameScene::onUserPaused(std::string user,std::string locId,bool isLobby)
 {
@@ -468,5 +540,3 @@ void GameScene::onUserResumed(std::string user,std::string locId,bool isLobby)
     removeStartGameLayer();
     this->schedule( schedule_selector(GameScene::updateGame));
 }
-
-

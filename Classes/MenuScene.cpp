@@ -70,6 +70,7 @@ bool MenuScene::init()
                                  origin.y + visibleSize.height/2 +
                                  startLabel->getContentSize().height));
     
+    // Game Start Button
     auto connectLabel = LabelTTF::create("Start Game", "Arial", TITLE_FONT_SIZE);
     connectLabel->setColor(Color3B(255, 255, 255));
     auto connectItem = MenuItemLabel::create(

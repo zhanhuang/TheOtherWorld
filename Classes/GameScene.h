@@ -11,12 +11,12 @@
 
 #include "cocos2d.h"
 #include "HUD.h"
+#include "Player.h"
 #include "StartGameLayer.h"
 #include "appwarp.h"
 
 #define APPWARP_APP_KEY     "de80eeab97716fd56519adb1190a6823384636c0ca1cebb32c2a06d0da692754"
 #define APPWARP_SECRET_KEY  "8d614c7559468c004a0257fb37d7346311a17e51814a499877c4e65768b044bc"
-#define ROOM_ID             "60606240"
 
 //#include "SimpleAudioEngine.h"
 
@@ -33,6 +33,7 @@ public:
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameScene);
     
+    void startGame();
     void alignViewPosition(cocos2d::Point playerPosition);
     
 	void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
@@ -49,18 +50,24 @@ protected:
     cocos2d::TMXTiledMap *_levelOverlay;
     cocos2d::TMXLayer *_meta;
     cocos2d::TMXLayer *_movables;
-    cocos2d::Sprite *_player1;
     cocos2d::Layer *_gameLayer;
     HUD *_hud;
     
+    Player *_girl;
+    Player *_man;
+    Player *_controlledPlayer;
+    Player *_otherPlayer;
+    bool isMan;
     
-    bool _playerIsMoving;
-    void collide(cocos2d::Point moveVector);
-    void playerMoveFinished();
+    cocos2d::Point moveVectorFromDirection(int direction);
+    void processPlayerMove(Player* player, int action, int direction);
+    void collide(Player* player, int direction);
+    void playerMoveFinished(Player* player);
     void tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord);
     bool passTilePropertyCheck(cocos2d::TMXTiledMap *map, cocos2d::TMXLayer *layer, cocos2d::Point coord, const char *property);
     bool failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord);
     
+    void correctPlayerState(Player* player, float xpos, float ypos);
     
     
     // appwarp
@@ -77,7 +84,7 @@ protected:
     void onConnectDone(int res);
     void onJoinRoomDone(AppWarp::room revent);
     void onSubscribeRoomDone(AppWarp::room revent);
-    void sendData(int action, int direction);
+    void sendData(int action, int direction, float xpos, float ypos);
     void onChatReceived(AppWarp::chat chatevent);
     void onUserPaused(std::string user,std::string locId,bool isLobby);
     void onUserResumed(std::string user,std::string locId,bool isLobby);

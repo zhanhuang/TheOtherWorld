@@ -83,6 +83,7 @@
   </data>
  </layer>
  <objectgroup name="Objects" width="20" height="50">
-  <object name="SpawnPoint" x="240" y="1520"/>
+  <object name="SpawnPoint0" x="240" y="1520"/>
+  <object name="SpawnPoint1" x="464" y="1520"/>
  </objectgroup>
 </map>
