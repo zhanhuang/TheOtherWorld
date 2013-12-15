@@ -48,27 +48,34 @@ protected:
     int MOVE_;
     cocos2d::TMXTiledMap *_levelMap;
     cocos2d::TMXTiledMap *_levelOverlay;
-    cocos2d::TMXLayer *_meta;
+    cocos2d::TMXObjectGroup *_objects;
+    cocos2d::TMXLayer *_objectTiles;
+    cocos2d::TMXObjectGroup *_platforms;
     cocos2d::TMXLayer *_movables;
     cocos2d::Layer *_gameLayer;
     HUD *_hud;
     
+    // player info
     Player *_girl;
     Player *_man;
     Player *_controlledPlayer;
     Player *_otherPlayer;
     bool isMan;
     
+    // queued actions
+    bool nextMoveSent;
+    
     cocos2d::Point moveVectorFromDirection(int direction);
-    void processPlayerMove(Player* player, int action, int direction);
-    void collide(Player* player, int direction);
-    void playerMoveFinished(Player* player);
+    cocos2d::Dictionary* objectDictByCoord(cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord);
+    void processPlayerChat(Player* player, std::string chat);
+    void playerMoveFinished(Player* player, std::string lastChat);
+    void collide(Player* player, int direction, std::string chat);
     void tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord);
-    bool passTilePropertyCheck(cocos2d::TMXTiledMap *map, cocos2d::TMXLayer *layer, cocos2d::Point coord, const char *property);
     bool failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord);
+    bool collisionCheck(cocos2d::Point coord);
     
-    void correctPlayerState(Player* player, float xpos, float ypos);
-    
+    // game mechanisms
+    void showDismissableMessageLayer(std::string message);
     
     // appwarp
     void connectToAppWarp(Object* pSender);

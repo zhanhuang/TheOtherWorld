@@ -22,10 +22,12 @@ public:
     
     void animateMove(int direction);
     void faceDirection(int direction);
+    
     int facingDirection;
     bool isMoving;
-    cocos2d::Point coord; //saves space of player
     
+    // queueing actions
+    std::string queuedChat;
 private:
     std::string _character;
     cocos2d::Array *_upframes;

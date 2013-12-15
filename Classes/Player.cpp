@@ -18,8 +18,11 @@ Player* Player::createWithSpriteFrameName(const std::string& spriteFrameName){
         // always start facing down
         thePlayer->facingDirection = 2;
         thePlayer->isMoving = false;
-        thePlayer->coord = Point(-1,-1);
         thePlayer->makeAnimations(spriteFrameName);
+        
+        //init queued chat string
+        thePlayer->queuedChat = "";
+        
         return thePlayer;
     }
     CC_SAFE_DELETE(thePlayer);
