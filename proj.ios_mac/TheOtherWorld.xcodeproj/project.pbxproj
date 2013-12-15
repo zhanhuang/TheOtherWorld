@@ -97,14 +97,8 @@
 		A69F189B185D83DD00721CE8 /* base_out_atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F188F185D83DD00721CE8 /* base_out_atlas.png */; };
 		A69F189C185D83DD00721CE8 /* final.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A69F1890185D83DD00721CE8 /* final.tmx */; };
 		A69F189D185D83DD00721CE8 /* finalOverlay.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A69F1891185D83DD00721CE8 /* finalOverlay.tmx */; };
-		A69F189E185D83DD00721CE8 /* level.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A69F1892185D83DD00721CE8 /* level.tmx */; };
-		A69F189F185D83DD00721CE8 /* levelOverlay.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A69F1893185D83DD00721CE8 /* levelOverlay.tmx */; };
 		A69F18A0185D83DD00721CE8 /* meta_tiles.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1894185D83DD00721CE8 /* meta_tiles.png */; };
-		A69F18A1185D83DD00721CE8 /* puzzle1.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A69F1895185D83DD00721CE8 /* puzzle1.tmx */; };
-		A69F18A2185D83DD00721CE8 /* symbol_tiles.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1896185D83DD00721CE8 /* symbol_tiles.png */; };
-		A69F18A3185D83DD00721CE8 /* terrain.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1897185D83DD00721CE8 /* terrain.png */; };
 		A69F18A4185D83DD00721CE8 /* terrain_atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1898185D83DD00721CE8 /* terrain_atlas.png */; };
-		A69F18A5185D83DD00721CE8 /* trees.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1899185D83DD00721CE8 /* trees.png */; };
 		A6D6817418550F67006C938C /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = A6D6817318550F67006C938C /* circle.png */; };
 		A6D681801855B87A006C938C /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6D6817F1855B87A006C938C /* GameKit.framework */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
@@ -385,14 +379,8 @@
 		A69F188F185D83DD00721CE8 /* base_out_atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = base_out_atlas.png; sourceTree = "<group>"; };
 		A69F1890185D83DD00721CE8 /* final.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = final.tmx; sourceTree = "<group>"; };
 		A69F1891185D83DD00721CE8 /* finalOverlay.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = finalOverlay.tmx; sourceTree = "<group>"; };
-		A69F1892185D83DD00721CE8 /* level.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = level.tmx; sourceTree = "<group>"; };
-		A69F1893185D83DD00721CE8 /* levelOverlay.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = levelOverlay.tmx; sourceTree = "<group>"; };
 		A69F1894185D83DD00721CE8 /* meta_tiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = meta_tiles.png; sourceTree = "<group>"; };
-		A69F1895185D83DD00721CE8 /* puzzle1.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = puzzle1.tmx; sourceTree = "<group>"; };
-		A69F1896185D83DD00721CE8 /* symbol_tiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = symbol_tiles.png; sourceTree = "<group>"; };
-		A69F1897185D83DD00721CE8 /* terrain.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain.png; sourceTree = "<group>"; };
 		A69F1898185D83DD00721CE8 /* terrain_atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain_atlas.png; sourceTree = "<group>"; };
-		A69F1899185D83DD00721CE8 /* trees.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trees.png; sourceTree = "<group>"; };
 		A6D6817318550F67006C938C /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = circle.png; path = sprites/circle.png; sourceTree = "<group>"; };
 		A6D6817F1855B87A006C938C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
@@ -687,14 +675,8 @@
 				A69F188F185D83DD00721CE8 /* base_out_atlas.png */,
 				A69F1890185D83DD00721CE8 /* final.tmx */,
 				A69F1891185D83DD00721CE8 /* finalOverlay.tmx */,
-				A69F1892185D83DD00721CE8 /* level.tmx */,
-				A69F1893185D83DD00721CE8 /* levelOverlay.tmx */,
 				A69F1894185D83DD00721CE8 /* meta_tiles.png */,
-				A69F1895185D83DD00721CE8 /* puzzle1.tmx */,
-				A69F1896185D83DD00721CE8 /* symbol_tiles.png */,
-				A69F1897185D83DD00721CE8 /* terrain.png */,
 				A69F1898185D83DD00721CE8 /* terrain_atlas.png */,
-				A69F1899185D83DD00721CE8 /* trees.png */,
 			);
 			path = levels;
 			sourceTree = "<group>";
@@ -902,7 +884,6 @@
 				5087E77F17EB970100C73F5D /* Default@2x.png in Resources */,
 				A69F18A4185D83DD00721CE8 /* terrain_atlas.png in Resources */,
 				A6228F4C185B91EC000F5EDC /* girl.plist in Resources */,
-				A69F189F185D83DD00721CE8 /* levelOverlay.tmx in Resources */,
 				50EF629917ECD46A001EB2F8 /* Icon-100.png in Resources */,
 				1AFAF8BC16D35E4900DB1158 /* CloseNormal.png in Resources */,
 				5087E78317EB970100C73F5D /* Icon-152.png in Resources */,
@@ -922,12 +903,9 @@
 				50EF629617ECD46A001EB2F8 /* Icon-40.png in Resources */,
 				A6228F4F185B91EC000F5EDC /* man.png in Resources */,
 				A625D3F718428FDC0068D251 /* Player.png in Resources */,
-				A69F18A3185D83DD00721CE8 /* terrain.png in Resources */,
-				A69F18A1185D83DD00721CE8 /* puzzle1.tmx in Resources */,
 				5087E78217EB970100C73F5D /* Icon-144.png in Resources */,
 				A62AD11B185AEF9A00F66D7F /* curl.h in Resources */,
 				A62AD11E185AEF9A00F66D7F /* curlver.h in Resources */,
-				A69F189E185D83DD00721CE8 /* level.tmx in Resources */,
 				A69F189C185D83DD00721CE8 /* final.tmx in Resources */,
 				50EF629817ECD46A001EB2F8 /* Icon-80.png in Resources */,
 				A62AD11F185AEF9A00F66D7F /* easy.h in Resources */,
@@ -935,10 +913,8 @@
 				A65A9618184C193800B87768 /* arrow_left.png in Resources */,
 				5087E78417EB970100C73F5D /* Icon-57.png in Resources */,
 				5087E77E17EB970100C73F5D /* Default.png in Resources */,
-				A69F18A2185D83DD00721CE8 /* symbol_tiles.png in Resources */,
 				A62AD121185AEF9A00F66D7F /* multi.h in Resources */,
 				A62AD11C185AEF9A00F66D7F /* curlbuild.h in Resources */,
-				A69F18A5185D83DD00721CE8 /* trees.png in Resources */,
 				A62AD11D185AEF9A00F66D7F /* curlrules.h in Resources */,
 				A62AD122185AEF9A00F66D7F /* stdcheaders.h in Resources */,
 				A6D6817418550F67006C938C /* circle.png in Resources */,
