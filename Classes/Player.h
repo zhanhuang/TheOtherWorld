@@ -26,6 +26,9 @@ public:
     int facingDirection;
     bool isMoving;
     
+    cocos2d::Point startCoord;
+    cocos2d::Point endCoord;
+    
     // queueing actions
     std::string queuedChat;
 private:

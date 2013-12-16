@@ -14,7 +14,10 @@ using namespace cocos2d;
 
 GameScene::~GameScene()
 {
-    
+    if(_keyDict){
+        _keyDict->release();
+        _keyDict = NULL;
+    }
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
 }
@@ -44,10 +47,13 @@ bool GameScene::init()
         // add tiled map as background
         _levelMap = TMXTiledMap::create("final.tmx");
         _levelMap->setScale(2.0);
-        _levelMap->getLayer("collision")->setVisible(false);
+        _levelMap->getLayer("man")->setVisible(false);
+        _levelMap->getLayer("girl")->setVisible(false);
         _movables = _levelMap->getLayer("move");
+        _objects = _levelMap->getObjectGroup("objects");
         _objectTiles = _levelMap->getLayer("objectTiles");
         _platforms = _levelMap->getObjectGroup("platforms");
+        _platformTiles = _levelMap->getLayer("platformTiles");
         _gameLayer->addChild(_levelMap, -2);
         
         // add overlay tilemap for trees
@@ -58,7 +64,6 @@ bool GameScene::init()
         TILE_SIZE = _levelMap->getTileSize().width;
         
         // add players
-        _objects = _levelMap->getObjectGroup("objects");
         
         Dictionary *spawnPoint0 = _objects->getObject("spawnPoint0");
         int x0 = spawnPoint0->valueForKey("x")->intValue();
@@ -70,6 +75,7 @@ bool GameScene::init()
         _man->setScale(2.0);
         batchNodeMan->addChild(_man);
         _man->setPosition(Point(x0,y0));
+        _man->endCoord = tileCoordForPosition(_man->getPosition());
         
         Dictionary *spawnPoint1 = _objects->getObject("spawnPoint1");
         int x1 = spawnPoint1->valueForKey("x")->intValue();
@@ -81,7 +87,7 @@ bool GameScene::init()
         _girl->setScale(2.0);
         batchNodeGirl->addChild(_girl);
         _girl->setPosition(Point(x1,y1));
-        
+        _girl->endCoord = tileCoordForPosition(_girl->getPosition());
         
         // add HUD
         _hud = HUD::create();
@@ -91,11 +97,17 @@ bool GameScene::init()
         // align with the girl first. change when game actually starts
         this->alignViewPosition(Point((x0+x1)/2,(y0+y1)/2));
         
+        // init keyDict
+        _keyDict = new Dictionary();
+        _keyDict->init();
+        _keyDict->setObject(Integer::create(1), "placeholder"); //so type is now kdictstr
+        
         // don't queue move at first
         nextMoveSent = true;
         
         isFirstLaunch = true;
         showStartGameLayer();
+        
         
 //		// use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
 //		this->schedule( schedule_selector(GameScene::updateGame));
@@ -157,7 +169,7 @@ void GameScene::updateGame(float dt)
             float yPos = _controlledPlayer->getPosition().y;
             if (_controlledPlayer->isMoving) {
                 // send a move to be queued only once.
-                // Set position to negative so correctState() is not called.
+                // Set position to negative so no position correction done.
                 nextMoveSent = true;
                 xPos = -1.0;
                 yPos = -1.0;
@@ -250,32 +262,49 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         if(player == _controlledPlayer){
             _gameLayer->runAction(actionMoveScreen);
         }
+        player->isMoving = true;
         player->runAction(actionSeq);
         player->animateMove(direction);
-        player->isMoving = true;
+        player->startCoord = tileCoordForPosition(player->getPosition());
+        player->endCoord = tileCoordWalk;
     }else{
         // standing action
+        if (chat.compare(_lastActionChat) == 0) {
+            return;
+        } else{
+            _lastActionChat = chat;
+        }
         Point moveVector = moveVectorFromDirection(player->facingDirection);
         auto actionTarget = player->getPosition() + moveVector;
         auto tileCoord = tileCoordForPosition(actionTarget);
-        Dictionary* objectDict = objectDictByCoord(_objects, tileCoord);
+        Dictionary* objectDict = objDictFromCoord(_objectTiles, _objects, tileCoord);
         if (objectDict) {
-            // check if it's a paper
-            const String* type = objectDict->valueForKey("type");
-            if (type->length() && type->compare("paper") == 0) {
-                const String* text = objectDict->valueForKey("text");
-                if (text->length()) {
-                    showDismissableMessageLayer(text->_string);
-                } else{
-                    printf("PAPER WITH NO TEXT");
-                }
+            player->isMoving = true;
+            // handle switch & key
+            const String* switchTarget = objectDict->valueForKey("switch");
+            const String* keyName = objectDict->valueForKey("key");
+            if (switchTarget->length()) {
+                removeObjectsWithName(switchTarget->getCString(), false);
+                _objectTiles->removeTileAt(tileCoord);
+            } else if (keyName->length()) {
+                unlockKeyWithName(keyName->getCString(), 0);
+                _objectTiles->removeTileAt(tileCoord);
             }
+            
+            // handle read
+            const String* text = objectDict->valueForKey("text");
+            if (text->length() && player == _controlledPlayer) {
+                this->showDismissableMessageLayer(text->_string);
+            }
+            player->isMoving = false;
         }
     }
 }
 
 void GameScene::playerMoveFinished(Player* player, std::string lastChat){
     player->isMoving = false;
+    platformTrigger(player->endCoord, "player");
+    platformTrigger(player->startCoord, "any");
     if (!player->queuedChat.empty()) {
         if (player == _controlledPlayer) {
             nextMoveSent = false;
@@ -308,20 +337,115 @@ Point GameScene::moveVectorFromDirection(int direction){
     return Point::ZERO;
 }
 
-Dictionary* GameScene::objectDictByCoord(cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord){
-    if (!_objectTiles->getTileGIDAt(coord)) {
+Dictionary* GameScene::objDictFromCoord(TMXLayer* objLayer, TMXObjectGroup* objGroup, Point coord){
+    if (!objLayer->getTileGIDAt(coord)) {
         return NULL;
     }
     Object *nextObj;
     CCARRAY_FOREACH(objGroup->getObjects(), nextObj){
         Dictionary *nextObjDict = dynamic_cast<Dictionary*>(nextObj);
-        int x = nextObjDict->valueForKey("x")->intValue() + TILE_SIZE/2;
-        int y = nextObjDict->valueForKey("y")->intValue() + TILE_SIZE/2;
-        if(tileCoordForPosition(Point(x,y)) == coord){
+        if(tileCoordFromObjDict(nextObjDict) == coord){
             return nextObjDict;
         }
     }
     return NULL;
+}
+
+void GameScene::removeObjectsWithName(const char *switchTarget, bool temporary){
+    Dictionary *nextObjDict;
+    while(_objects->getObject(switchTarget)){
+        nextObjDict = _objects->getObject(switchTarget);
+        if (temporary) {
+            auto toggleTarget = _objectTiles->getTileAt(tileCoordFromObjDict(nextObjDict));
+            toggleTarget->setVisible(!toggleTarget->isVisible());
+        } else{
+            _objectTiles->removeTileAt(tileCoordFromObjDict(nextObjDict));
+        }
+    }
+    if (_levelMap->getLayer(switchTarget)) {
+        if (temporary) {
+            auto toggleTarget = _levelMap->getLayer(switchTarget);
+            toggleTarget->setVisible(!toggleTarget->isVisible());
+        } else{
+            _levelMap->removeChild(_levelMap->getLayer(switchTarget));
+        }
+    }
+}
+
+void GameScene::unlockKeyWithName(const char *keyName, int toggle){
+    // increase key count in keyDict
+    int keyVal = _keyDict->valueForKey(keyName)->intValue();
+    printf("keyVal: %d, toggle:%d", keyVal, toggle);
+    if (toggle != 0) {
+        keyVal += toggle;
+        if (keyVal < 0){
+            keyVal = 0;
+        }
+    } else{
+        keyVal++;
+    }
+    std::stringstream ss;
+    ss << keyVal;
+    _keyDict->setObject(String::create(ss.str()), keyName);
+    
+    
+    // remove corresponding locks
+    bool hasLocked = false;
+    
+    int keyCount;
+    Dictionary *nextObjDict;
+    while(_objects->getObject(keyName)){
+        nextObjDict = _objects->getObject(keyName);
+        keyCount = nextObjDict->valueForKey("keyCount")->intValue();
+        Point targetLoc = tileCoordFromObjDict(nextObjDict);
+        if (keyCount <= keyVal) {
+            if (toggle == 0) {
+                _objectTiles->removeTileAt(targetLoc);
+            } else if(toggle == 1){
+                _objectTiles->getTileAt(targetLoc)->setVisible(false);
+            }
+        } else{
+            if(toggle == -1){
+                _objectTiles->getTileAt(targetLoc)->setVisible(true);
+            }
+            hasLocked = true;
+        }
+    }
+    Object* nextObj;
+    CCARRAY_FOREACH(_levelMap->getChildren(), nextObj){
+        TMXLayer *nextLayer = dynamic_cast<TMXLayer*>(nextObj);
+        auto properties = nextLayer->getProperties();
+        if (properties) {
+            keyCount = nextLayer->getProperties()->valueForKey(keyName)->intValue();
+            if (keyCount) {
+                if (keyCount <= keyVal) {
+                    if (toggle == 0) {
+                        _levelMap->removeChild(nextLayer);
+                    } else if(toggle == 1){
+                        nextLayer->setVisible(false);
+                    }
+                } else{
+                    if(toggle == -1){
+                        nextLayer->setVisible(true);
+                    }
+                    hasLocked = true;
+                }
+            }
+        }
+    }
+    
+    if (!hasLocked) {
+        keyVal += 10;
+        std::stringstream ss2;
+        ss2 << keyVal;
+        _keyDict->setObject(String::create(ss2.str()), keyName);
+    }
+}
+
+Point GameScene::tileCoordFromObjDict(Dictionary *objDict){
+    int x = objDict->valueForKey("x")->intValue() + TILE_SIZE/2;
+    int y = objDict->valueForKey("y")->intValue() + TILE_SIZE/2;
+    return tileCoordForPosition(Point(x,y));
 }
 
 void GameScene::collide(Player* player, int direction, std::string chat){
@@ -350,9 +474,11 @@ bool GameScene::collisionCheck(cocos2d::Point coord){
     Object* nextObj;
     CCARRAY_FOREACH(_levelMap->getChildren(), nextObj){
         TMXLayer *nextLayer = dynamic_cast<TMXLayer*>(nextObj);
-        if (nextLayer->getProperties()->valueForKey("collision")->length()) {
-            if (nextLayer->getTileGIDAt(coord)) {
-                return true;
+        if (nextLayer->isVisible()) {
+            if (nextLayer->getProperties()->valueForKey("collision")->length()) {
+                if (nextLayer->getTileGIDAt(coord)) {
+                    return true;
+                }
             }
         }
     }
@@ -362,6 +488,17 @@ bool GameScene::collisionCheck(cocos2d::Point coord){
     if (coord == coord0 || coord == coord1) {
         return true;
     }
+    
+//    // includes walking positions
+//    if (coord == _controlledPlayer->endCoord || coord == _otherPlayer->endCoord) {
+//        return true;
+//    }
+//    if (_controlledPlayer->isMoving && coord == _controlledPlayer->startCoord) {
+//        return true;
+//    }
+//    if (_otherPlayer->isMoving && coord == _otherPlayer->startCoord) {
+//        return true;
+//    }
     return false;
 }
 
@@ -369,6 +506,48 @@ void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCo
     int tileGID = layer->getTileGIDAt(fromCoord);
     layer->setTileGID(tileGID, toCoord);
     layer->removeTileAt(fromCoord);
+    
+    auto properties = _levelMap->getPropertiesForGID(tileGID);
+    if (properties) {
+        const String* blockProperty = properties->valueForKey("block");
+        if (blockProperty->length()) {
+            platformTrigger(toCoord, blockProperty->getCString());
+            return;
+        }
+    }
+    platformTrigger(toCoord, "blocks");
+    platformTrigger(fromCoord, "any");
+}
+
+void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
+    Dictionary *objectDict = objDictFromCoord(_platformTiles, _platforms, coord);
+    if (objectDict) {
+        const String* blockRequired = objectDict->valueForKey("block");
+        if (!blockRequired->compare(property) || !blockRequired->compare("any") || !strncmp(property, "any", 20)) {
+            // handle switch, toggle & key
+            const String* switchTarget = objectDict->valueForKey("switch");
+            const String* toggleTarget = objectDict->valueForKey("toggle");
+            const String* keyName = objectDict->valueForKey("key");
+            if (switchTarget->length()) {
+                removeObjectsWithName(switchTarget->getCString(), false);
+                _platformTiles->removeTileAt(coord);
+            } else if (toggleTarget->length()) {
+                if (!toggleTarget->compare("key")) {
+                    if (!strncmp(property, "any", 20)) {
+                        unlockKeyWithName(keyName->getCString(), -1);
+                    } else{
+                        unlockKeyWithName(keyName->getCString(), 1);
+                    }
+                }
+                removeObjectsWithName(toggleTarget->getCString(), true);
+                auto toggleTarget = _platformTiles->getTileAt(coord);
+                toggleTarget->setVisible(!toggleTarget->isVisible());
+            } else if (keyName->length()) {
+                unlockKeyWithName(keyName->getCString(), 0);
+                _platformTiles->removeTileAt(coord);
+            }
+        }
+    }
 }
 
 /***
@@ -395,7 +574,7 @@ void GameScene::showStartGameLayer()
 
 void GameScene::removeStartGameLayer()
 {
-    removeChild(startGameLayer,true);
+    removeChild(startGameLayer,false);
     if(_controlledPlayer){
         _controlledPlayer->isMoving = false;
     }
@@ -513,6 +692,7 @@ void GameScene::showReconnectingLayer(std::string message)
 
 void GameScene::showDismissableMessageLayer(std::string message)
 {
+    this->removeStartGameLayer();
     if (_controlledPlayer) {
         _controlledPlayer->isMoving = true;
     }
@@ -550,9 +730,11 @@ void GameScene::onJoinRoomDone(AppWarp::room revent)
         if (isMan) {
             _controlledPlayer = _man;
             _otherPlayer = _girl;
+            _levelMap->getLayer("man")->setVisible(true);
         }else{
             _controlledPlayer = _girl;
             _otherPlayer = _man;
+            _levelMap->getLayer("girl")->setVisible(true);
         }
         this->startGame();
         removeStartGameLayer();

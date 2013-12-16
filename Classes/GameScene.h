@@ -51,9 +51,12 @@ protected:
     cocos2d::TMXObjectGroup *_objects;
     cocos2d::TMXLayer *_objectTiles;
     cocos2d::TMXObjectGroup *_platforms;
+    cocos2d::TMXLayer *_platformTiles;
     cocos2d::TMXLayer *_movables;
     cocos2d::Layer *_gameLayer;
     HUD *_hud;
+    
+    cocos2d::Dictionary *_keyDict;
     
     // player info
     Player *_girl;
@@ -64,9 +67,9 @@ protected:
     
     // queued actions
     bool nextMoveSent;
+    std::string _lastActionChat;
     
     cocos2d::Point moveVectorFromDirection(int direction);
-    cocos2d::Dictionary* objectDictByCoord(cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord);
     void processPlayerChat(Player* player, std::string chat);
     void playerMoveFinished(Player* player, std::string lastChat);
     void collide(Player* player, int direction, std::string chat);
@@ -75,7 +78,13 @@ protected:
     bool collisionCheck(cocos2d::Point coord);
     
     // game mechanisms
+    cocos2d::Dictionary* objDictFromCoord(cocos2d::TMXLayer* objLayer, cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord);
+    void removeObjectsWithName(const char *switchTarget, bool temporary);
     void showDismissableMessageLayer(std::string message);
+    void platformTrigger(cocos2d::Point coord, const char *property);
+    
+    void unlockKeyWithName(const char *keyName, int toggle);
+    cocos2d::Point tileCoordFromObjDict(cocos2d::Dictionary *objDict);
     
     // appwarp
     void connectToAppWarp(Object* pSender);
