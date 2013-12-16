@@ -100,8 +100,14 @@
 		A69F18A0185D83DD00721CE8 /* meta_tiles.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1894185D83DD00721CE8 /* meta_tiles.png */; };
 		A69F18A4185D83DD00721CE8 /* terrain_atlas.png in Resources */ = {isa = PBXBuildFile; fileRef = A69F1898185D83DD00721CE8 /* terrain_atlas.png */; };
 		A69F18A7185EF6F900721CE8 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A69F18A6185EF6F900721CE8 /* Images.xcassets */; };
+		A69F18AC185EFD6F00721CE8 /* getKey.wav in Resources */ = {isa = PBXBuildFile; fileRef = A69F18A9185EFD6F00721CE8 /* getKey.wav */; };
+		A69F18AD185EFD6F00721CE8 /* tileMove.wav in Resources */ = {isa = PBXBuildFile; fileRef = A69F18AA185EFD6F00721CE8 /* tileMove.wav */; };
+		A69F18AE185EFD6F00721CE8 /* unlocked.wav in Resources */ = {isa = PBXBuildFile; fileRef = A69F18AB185EFD6F00721CE8 /* unlocked.wav */; };
 		A6D6817418550F67006C938C /* circle.png in Resources */ = {isa = PBXBuildFile; fileRef = A6D6817318550F67006C938C /* circle.png */; };
 		A6D681801855B87A006C938C /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A6D6817F1855B87A006C938C /* GameKit.framework */; };
+		A6EAD382185F2CFA005B29BD /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD37F185F2CFA005B29BD /* Default-Landscape.png */; };
+		A6EAD383185F2CFA005B29BD /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD380185F2CFA005B29BD /* Default-Landscape@2x.png */; };
+		A6EAD385185F2DFA005B29BD /* Default-568h-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD384185F2DFA005B29BD /* Default-568h-Landscape@2x.png */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -383,8 +389,14 @@
 		A69F1894185D83DD00721CE8 /* meta_tiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = meta_tiles.png; sourceTree = "<group>"; };
 		A69F1898185D83DD00721CE8 /* terrain_atlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = terrain_atlas.png; sourceTree = "<group>"; };
 		A69F18A6185EF6F900721CE8 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = "TheOtherWorld iOS/Images.xcassets"; sourceTree = SOURCE_ROOT; };
+		A69F18A9185EFD6F00721CE8 /* getKey.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = getKey.wav; sourceTree = "<group>"; };
+		A69F18AA185EFD6F00721CE8 /* tileMove.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = tileMove.wav; sourceTree = "<group>"; };
+		A69F18AB185EFD6F00721CE8 /* unlocked.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = unlocked.wav; sourceTree = "<group>"; };
 		A6D6817318550F67006C938C /* circle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = circle.png; path = sprites/circle.png; sourceTree = "<group>"; };
 		A6D6817F1855B87A006C938C /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS7.0.sdk/System/Library/Frameworks/GameKit.framework; sourceTree = DEVELOPER_DIR; };
+		A6EAD37F185F2CFA005B29BD /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-Landscape.png"; sourceTree = SOURCE_ROOT; };
+		A6EAD380185F2CFA005B29BD /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape@2x.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-Landscape@2x.png"; sourceTree = SOURCE_ROOT; };
+		A6EAD384185F2DFA005B29BD /* Default-568h-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h-Landscape@2x.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-568h-Landscape@2x.png"; sourceTree = SOURCE_ROOT; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -572,6 +584,9 @@
 		5087E77117EB970100C73F5D /* Icons */ = {
 			isa = PBXGroup;
 			children = (
+				A6EAD384185F2DFA005B29BD /* Default-568h-Landscape@2x.png */,
+				A6EAD37F185F2CFA005B29BD /* Default-Landscape.png */,
+				A6EAD380185F2CFA005B29BD /* Default-Landscape@2x.png */,
 				5087E77217EB970100C73F5D /* Default-568h@2x.png */,
 				5087E77317EB970100C73F5D /* Default.png */,
 				5087E77417EB970100C73F5D /* Default@2x.png */,
@@ -597,6 +612,7 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				A69F18A8185EFD6F00721CE8 /* sounds */,
 				A69F18A6185EF6F900721CE8 /* Images.xcassets */,
 				A69F188D185D83DD00721CE8 /* levels */,
 				A65A960D184BD98C00B87768 /* sprites */,
@@ -682,6 +698,16 @@
 				A69F1898185D83DD00721CE8 /* terrain_atlas.png */,
 			);
 			path = levels;
+			sourceTree = "<group>";
+		};
+		A69F18A8185EFD6F00721CE8 /* sounds */ = {
+			isa = PBXGroup;
+			children = (
+				A69F18A9185EFD6F00721CE8 /* getKey.wav */,
+				A69F18AA185EFD6F00721CE8 /* tileMove.wav */,
+				A69F18AB185EFD6F00721CE8 /* unlocked.wav */,
+			);
+			path = sounds;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -894,12 +920,16 @@
 				A65A961A184C193800B87768 /* arrow_up.png in Resources */,
 				5087E78517EB970100C73F5D /* Icon-57~ipad.png in Resources */,
 				1AFAF8BD16D35E4900DB1158 /* CloseSelected.png in Resources */,
+				A69F18AE185EFD6F00721CE8 /* unlocked.wav in Resources */,
 				50EF62A317ECD613001EB2F8 /* Icon-50.png in Resources */,
 				A6228F4D185B91EC000F5EDC /* girl.png in Resources */,
+				A6EAD383185F2CFA005B29BD /* Default-Landscape@2x.png in Resources */,
 				A6228F4E185B91EC000F5EDC /* man.plist in Resources */,
 				A65A9617184C193800B87768 /* arrow_down.png in Resources */,
 				A65A9619184C193800B87768 /* arrow_right.png in Resources */,
 				5087E78017EB970100C73F5D /* Icon-57~iphone.png in Resources */,
+				A6EAD385185F2DFA005B29BD /* Default-568h-Landscape@2x.png in Resources */,
+				A69F18AD185EFD6F00721CE8 /* tileMove.wav in Resources */,
 				A69F189B185D83DD00721CE8 /* base_out_atlas.png in Resources */,
 				1AFAF8BE16D35E4900DB1158 /* HelloWorld.png in Resources */,
 				50EF62A217ECD613001EB2F8 /* Icon-57-Small.png in Resources */,
@@ -911,6 +941,7 @@
 				A62AD11E185AEF9A00F66D7F /* curlver.h in Resources */,
 				A69F189C185D83DD00721CE8 /* final.tmx in Resources */,
 				50EF629817ECD46A001EB2F8 /* Icon-80.png in Resources */,
+				A6EAD382185F2CFA005B29BD /* Default-Landscape.png in Resources */,
 				A62AD11F185AEF9A00F66D7F /* easy.h in Resources */,
 				A69F189D185D83DD00721CE8 /* finalOverlay.tmx in Resources */,
 				A65A9618184C193800B87768 /* arrow_left.png in Resources */,
@@ -922,6 +953,7 @@
 				A62AD11D185AEF9A00F66D7F /* curlrules.h in Resources */,
 				A62AD122185AEF9A00F66D7F /* stdcheaders.h in Resources */,
 				A6D6817418550F67006C938C /* circle.png in Resources */,
+				A69F18AC185EFD6F00721CE8 /* getKey.wav in Resources */,
 				A69F189A185D83DD00721CE8 /* allterrain.png in Resources */,
 				50EF629717ECD46A001EB2F8 /* Icon-57@2x~iphone.png in Resources */,
 				A62AD123185AEF9A00F66D7F /* typecheck-gcc.h in Resources */,
@@ -1038,6 +1070,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;
@@ -1072,6 +1106,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COMPRESS_PNG_FILES = NO;

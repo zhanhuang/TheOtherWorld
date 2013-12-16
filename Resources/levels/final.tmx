@@ -27,6 +27,11 @@
     <property name="block" value="star"/>
    </properties>
   </tile>
+  <tile id="580">
+   <properties>
+    <property name="block" value="green"/>
+   </properties>
+  </tile>
   <tile id="601">
    <properties>
     <property name="block" value="blue"/>
@@ -72,7 +77,7 @@
    <property name="collision" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJztlsFuxDAIRHtu//9/e6q6QgZmYGxnW0aKdpXYPAZjJx8fo9FoNBqNRqPRaDQajZ6uzy/uQmOe5qJju9xqDTrcijeV36pOrq869y5XkU9lTSq1RNcGjbuKf5PLMrP+VMUb7nCHO9zhDne4f4fbUcZF57K5IH4ZbmVelIuSi/hlhObA9hXLibiMlw7X+kL9Vbhe/q/czJ/C7+r5Lm4km5/9nzFQLjMuyxflRuuO5IfWAMk74jKqrIN3j41Z8fd6r7q29lmXi+5NlOutacb12AyX3Xtdv5Gy+P+Ba5/v5EbPu9zKmYBykVis/w630ivRfkPyr3qvclRcVX13aIffVezK3unkGXEr/Ynkj3J3rq+ix7KaInyl38yT5a5yrnhX9n733GDzZsYh89V+0Xw73ChOZ38wfiuxK36zeBVPaJ3ZfFd5v463v0xejF8bJ+Ou8mT9Vrir8QwX7ZfuvNGvorqoa+X1/Qmu1xejM9pd613xs7i3uCfEvIOV1yqP7H80552041xC4nW4WX+g8dlzGRlf4a7eFd79zvsk+nZCfbHciIX48r61WJ/ZfmfPG8Y/w7XP7Vgkt+r5p4473L29pRDbyze0uy43a7+DncW6xd0hu69Ocm/sXYarXtsu9+e+99vlntKtd9GT1cmv4/cWt8pScbM9o+Aqc6rGZLiRv525reZVYlV6P1trb97TuAg/4q7iI1Ls+dtns/I9pIo3XB3Xjlf1DHLPcrt78DWOFyPLgeHaOqJc69erF1KzjliuN5bpS4U63NVaeWOU3Cx2NgflIr2FcN6F68XwGMycbGzWYx53NcaL59Um4yJCfa+42f5hzxE0t11ctOe8PqheHXXn35C6BgzHO7eYtenE6/SEgnvLr5rL9JDaL6rh9rmruasxO7h2fqUmnrxYDEOVC6sKN1vTE3pyXZW95cV/Erc7lpn3DfPRuFQ=
+   eJztlcFuxDAIRPfc/v//9lR1hQzMDNhOW0aKdpXYPAZw8nqNRqPRaDQajUaj0Wg0ero+PrkLjXmai66tctUaVLiKty6/qk72tzv3KrcjH6UnSi3R3qBxV/FvcllmNp9d8YY73OEOd7jDHe7f4VaUcdG9bC6IX4ar7Ity6eQifhmhObBzxXIiLuOlwrW+UH8K18v/nZv56/C7er6LG8nmZ/9nDJTLrMvyRblR35H80BogeUdcRkofvHtsTMXf+z21t/ZZlYueTZTr9TTjemyGy569qt9IWfz/wLXPd3Kj51Wu8k5AuUgs1n+Fq8xKdN6Q/FXvKqeL21XfHdrhdxVbOTuVPCOuMp9I/ih3Z387ZiyrKcLv9Jt5stxVzor3ztmvvjfYvJl1yP5uv2i+FW4Up3I+GL9KbMVvFk/xhNaZzXeV9/t6+8vkxfi1cTLuKk/Wr8JdrWe46LxU941+FNWlu1be3J/genMxOqPdtd4VP4t7i3tCzDe481rlkf2P9uzQru9LFkPhIjlF33Cld973GMkBrSHqneWufHv3K7339jG+WK56hiOu0tfsvLPvG8Y/w7XP7VokN/ZCPQ/3DPek2Fm+od11uVn7Hews1i3uDtlzdZJ74+wy3O7eVrnf973fKveUbn2LnqxKfhW/t7gqq4ubnZkObmdOakyGG/nbmdtqnxJLmf2s196+p3ERfsRdxUfUceZvv5s7v0Nd8Ybbx7Xru2YGuWe51TP4HseLkeXAcG0dUa7169ULqVlFLNdby8xlhyrcVa+8NZ3cLHa2B+Uis4VwfgvXi+ExmD3Z2mzGPO5qjRfPq03GRYT6XnGz88O+R9DcdnHRmfPmQL0qqu6/oe4aMBzvvcX0phKvMhMd3Ft+u7nMDHX7RTXcOne1d7VmB9fuV2riyYvFMLpyYaVws56e0JPr2jlbXvwncatrmX1fRJm6TA==
   </data>
  </layer>
  <layer name="ground" width="30" height="200">
@@ -116,16 +121,6 @@
   </properties>
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIA7Dd+BeMjAXSKmgCAAAAAAAAAAAAAAAAAAAAAAB/TDsAAAAAAMBpCz3fAAs=
-  </data>
- </layer>
- <layer name="girl" width="30" height="200">
-  <data encoding="base64" compression="zlib">
-   eJzt1oEJACAIAEHbtZ1bpxGEIBK7m0DhESMAAAAAAAAAgCrWeD0B1WkEADjhh+CGrKtu3XXbB/jXdM8AAAAAAAAAAAAAILUBisIFdg==
-  </data>
- </layer>
- <layer name="man" width="30" height="200">
-  <data encoding="base64" compression="zlib">
-   eJzt2LENgCAQBVDc1Wlcwt7a3sTOCVzHykRpDRyR9xJi+fkErjAlAAAAAAAAAKCGc4jeAdADswYg3j2L8y/w3R/e0x86AH0azS8AAAAAGjMH/LOaKmVGdKthzXodhXvu6X2WpfNas1TO2x5Lblm93WUAAAAAiHIBWOsT7w==
   </data>
  </layer>
  <layer name="cupVanish" width="30" height="200">
@@ -178,7 +173,7 @@
  </layer>
  <layer name="platformTiles" width="30" height="200">
   <data encoding="base64" compression="zlib">
-   eJzt2TEKwCAQBEDb/P9/eUuqQAhIGuMtOtPYCB7cKge2BgAAAAAAAADMcB5j9rC35Iwk17YTfQCod7/F77VSQg2s5ytXf+SuMsujznYfM+gDieSSlfVmZLkHAID5zOcAAAAAAAAkev5X+bsixQULvxd3
+   eJzt2UEKgCAQBVC33f98dYEu0SKCiCIXygz6HogbQcHvMGApAAAAAABt7Ms5AACAd1tFv1yzhrllzkjms83EPQDEu2rxc46U4QyM5y9XPXIXmeVWe3uPObgHMpJLRvbVI8s9EGFVewCYnP4cAAAAAACAjO7/Vf6uyOIAi3AaRQ==
   </data>
  </layer>
  <objectgroup name="platforms" width="30" height="200">
@@ -218,28 +213,28 @@
    <properties>
     <property name="block" value="yellow"/>
     <property name="key" value="doorKey"/>
-    <property name="vanish" value="true"/>
+    <property name="toggle" value="key"/>
    </properties>
   </object>
   <object name="purpleplatform" gid="471" x="576" y="3616">
    <properties>
     <property name="block" value="purple"/>
     <property name="key" value="doorKey"/>
-    <property name="vanish" value="true"/>
+    <property name="toggle" value="key"/>
    </properties>
   </object>
   <object name="blueplatform" gid="471" x="640" y="3616">
    <properties>
     <property name="block" value="blue"/>
     <property name="key" value="doorKey"/>
-    <property name="vanish" value="true"/>
+    <property name="toggle" value="key"/>
    </properties>
   </object>
   <object name="greenplatform" gid="471" x="704" y="3616">
    <properties>
     <property name="block" value="green"/>
     <property name="key" value="doorKey"/>
-    <property name="vanish" value="true"/>
+    <property name="toggle" value="key"/>
    </properties>
   </object>
   <object name="lakeplatform" gid="471" x="448" y="6240">
@@ -260,9 +255,8 @@
   </object>
   <object name="puzzle5platform" gid="470" x="288" y="3936">
    <properties>
-    <property name="block" value="blocks"/>
-    <property name="switch" value="puzzlefivedoor"/>
-    <property name="toggle" value="true"/>
+    <property name="block" value="green"/>
+    <property name="toggle" value="puzzlefivedoor"/>
    </properties>
   </object>
   <object name="puzzle7platformleft" gid="471" x="384" y="3424">
@@ -383,6 +377,20 @@
     <property name="visible" value="false"/>
    </properties>
   </object>
+  <object name="end" type="win" gid="471" x="608" y="1408">
+   <properties>
+    <property name="block" value="player"/>
+    <property name="text" value="You have escaped the forest... for now."/>
+    <property name="win" value="true"/>
+   </properties>
+  </object>
+  <object name="end" type="win" gid="471" x="576" y="1408">
+   <properties>
+    <property name="block" value="player"/>
+    <property name="text" value="You have escaped the forest... for now."/>
+    <property name="win" value="true"/>
+   </properties>
+  </object>
  </objectgroup>
  <layer name="move" width="30" height="200">
   <data encoding="base64" compression="zlib">
@@ -394,12 +402,12 @@
    <property name="collision" value="true"/>
   </properties>
   <data encoding="base64" compression="zlib">
-   eJzt2lEKgzAMANAy3K61w3iQ/e4qu+Uowx/BiTV1rXsPBH9MxcQY0ZQAAAAAAAAA4D89bymNw2fL+xAt1xZ9mveEI3LZar3cr78+g3NpNc/E5GYtRsvzxtK9Hlmz32K1fG1AffYjqmeVxNm79hHPoci1gL5dCvtA6XFAHebUc5i+UQDAXnleN7ND/8z5APEeZqTNXv4VAoBqvPdRmxoDAIB4b6dRDpw=
+   eJzt2kEKgzAQBdAgrdfqYXqQbnuV3rKE4kZooXFiM/Y9ENwYlRmTL1oKAAAAAAAAAPyn+1zK9fTa6j5Eq71FTus5YY9ajtovl/Ovr+BYRq0zMbXJXN93z3rkPX0aSxZjZPozj6g5q2Wcrefecx3KvF4BMabGeaD1OKAPOfUYlm8UALBVzesyO+Qn5+emfjCmm4z0tYd/hQCgG+8N9KbHAAAg3hMXyA6c
   </data>
  </layer>
  <objectgroup name="objects" width="30" height="200">
-  <object name="spawnPoint0" x="560" y="4656"/>
-  <object name="spawnPoint1" x="624" y="4656"/>
+  <object name="spawnPoint0" x="464" y="6320"/>
+  <object name="spawnPoint1" x="560" y="6320"/>
   <object name="chest" type="key" gid="1343" x="576" y="2496">
    <properties>
     <property name="key" value="platformKey"/>
@@ -444,19 +452,14 @@
   </object>
   <object name="girl switch #9" type="paper" gid="482" x="355" y="2433">
    <properties>
+    <property name="switch" value="switchdoor"/>
     <property name="text" value="&quot;You see a piece of paper stuck to the wall. Underneath it, you see a switch. You press it.&quot;"/>
-    <property name="toggle" value="switchdoor"/>
     <property name="vanish" value="true"/>
    </properties>
   </object>
   <object name="guy paper #8" type="paper" gid="482" x="609" y="2976">
    <properties>
     <property name="text" value="1. Point me in a direction, and I shall go. 2. Place me under a house, and I shall build. 3. Chain me, and I shall knock it down.&quot;"/>
-   </properties>
-  </object>
-  <object name="guy switch #9" type="paper" gid="482" x="640" y="2720">
-   <properties>
-    <property name="text" value="&quot;You see a piece of paper stuck to the wall. Underneath it, you see a switch. You press it.&quot;"/>
    </properties>
   </object>
   <object name="girl paper #10" type="paper" gid="482" x="544" y="2144">
@@ -479,14 +482,14 @@
     <property name="keyCount" value="4"/>
    </properties>
   </object>
-  <object name="door" type="door" gid="356" x="704" y="3456">
+  <object name="doorKey" type="door" gid="356" x="704" y="3456">
    <properties>
-    <property name="doorKey" value="4"/>
+    <property name="keyCount" value="4"/>
    </properties>
   </object>
-  <object name="door" type="door" gid="356" x="256" y="3456">
+  <object name="doorKey" type="door" gid="356" x="256" y="3456">
    <properties>
-    <property name="doorKey" value="4"/>
+    <property name="keyCount" value="4"/>
    </properties>
   </object>
   <object name="girltwodoorvanish" type="door" gid="356" x="640" y="3168"/>
@@ -512,14 +515,14 @@
   <object name="2switchdoor" type="door" gid="356" x="640" y="2304"/>
   <object name="3switchdoor" type="door" gid="356" x="480" y="2432"/>
   <object name="4switchdoor" type="door" gid="356" x="800" y="2688"/>
-  <object name="lastswitchdoor1" type="door" gid="356" x="576" y="2144">
+  <object name="finalDoorKey" type="door" gid="356" x="576" y="2144">
    <properties>
-    <property name="finalDoorKey" value="2"/>
+    <property name="keyCount" value="2"/>
    </properties>
   </object>
-  <object name="lastswitchdoor2" type="door" gid="356" x="608" y="2144">
+  <object name="finalDoorKey" type="door" gid="356" x="608" y="2144">
    <properties>
-    <property name="finalDoorKey" value="2"/>
+    <property name="keyCount" value="2"/>
    </properties>
   </object>
   <object name="puzzlefivedoor" type="door" gid="356" x="160" y="3840"/>
@@ -531,18 +534,6 @@
     <property name="vanish" value="true"/>
    </properties>
   </object>
-  <object name="end" gid="471" x="576" y="1408">
-   <properties>
-    <property name="block" value="player"/>
-    <property name="text" value="You have escaped the forest... for now."/>
-   </properties>
-  </object>
-  <object name="end" gid="471" x="608" y="1408">
-   <properties>
-    <property name="block" value="player"/>
-    <property name="text" value="You have escaped the forest... for now."/>
-   </properties>
-  </object>
   <object name="pond" gid="259" x="192" y="4896">
    <properties>
     <property name="pondKey" value="1"/>
@@ -551,7 +542,22 @@
     <property name="vanish" value="true"/>
    </properties>
   </object>
+  <object name="tutorial1" type="paper" gid="482" x="482" y="4639">
+   <properties>
+    <property name="text" value="hold O and walk in the other direction to pull a block"/>
+   </properties>
+  </object>
  </objectgroup>
+ <layer name="girl" width="30" height="200">
+  <data encoding="base64" compression="zlib">
+   eJzt1gEJACAMBEDtalUzWMcIgiAb8y7BD55nrQEAAAAAAAAAWawenYDsdAQAuOGH4IVTr6r1rto9wL+GPQMAAAAAAACAcmZ0AAAAKGgDUlEGOw==
+  </data>
+ </layer>
+ <layer name="man" width="30" height="200">
+  <data encoding="base64" compression="zlib">
+   eJzt2DEKhDAQBdB41z2Nl7DfentBsPAEXmcrQdOJJCPJexBS/pmQTJGUAAAAAAAAAIAa9iG6AqAHZg1AvGMW5zvwXAvvqYUegD59zC8AAAAAXmYK+LMaK2VG9FbDL+trK9znkq5nWTrvbb6V8+bTkltWb3cZoBVrdAEAAADc9gf3fRS0
+  </data>
+ </layer>
  <layer name="bushVanish" width="30" height="200">
   <properties>
    <property name="collidable" value="true"/>

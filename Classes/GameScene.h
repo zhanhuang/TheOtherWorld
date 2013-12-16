@@ -82,7 +82,7 @@ protected:
     void removeObjectsWithName(const char *switchTarget, bool temporary);
     void showDismissableMessageLayer(std::string message);
     void platformTrigger(cocos2d::Point coord, const char *property);
-    
+    void platformToggleOff(cocos2d::Point coord, const char *property);
     void unlockKeyWithName(const char *keyName, int toggle);
     cocos2d::Point tileCoordFromObjDict(cocos2d::Dictionary *objDict);
     

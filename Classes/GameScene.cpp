@@ -7,7 +7,7 @@
 //
 
 #include "GameScene.h"
-//#include "SimpleAudioEngine.h"
+#include "SimpleAudioEngine.h"
 
 
 using namespace cocos2d;
@@ -118,6 +118,8 @@ bool GameScene::init()
 //        auto listener = EventListenerTouchAllAtOnce::create();
 //        listener->onTouchesEnded = CC_CALLBACK_2(GameScene::onTouchesEnded, this);
 //        dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+        
+        
 //        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("background-music.wav", true);
         
 		bRet = true;
@@ -194,7 +196,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
     int direction = std::atoi(str2.c_str());
     float xpos = std::atoi(str3.c_str());
     float ypos = std::atoi(str4.c_str());
-    printf("chat is : action:%d,direction:%d,x:%f,y:%f\n",action,direction,xpos,ypos);
+//    printf("chat is : action:%d,direction:%d,x:%f,y:%f\n",action,direction,xpos,ypos);
     
     // queue the action is player is moving
     if (player->isMoving) {
@@ -246,10 +248,11 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
                    return;
                 }
             }
-           FiniteTimeAction* actionPushed = MoveBy::create(MOVE_TIME-0.1, moveVector/2);
-           FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
-           Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
-           _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
+            FiniteTimeAction* actionPushed = MoveBy::create(MOVE_TIME-0.1, moveVector/2);
+            FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
+            Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
+            _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
+            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("tileMove.wav");
         }
         
         // Create player movement action
@@ -279,7 +282,6 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         auto tileCoord = tileCoordForPosition(actionTarget);
         Dictionary* objectDict = objDictFromCoord(_objectTiles, _objects, tileCoord);
         if (objectDict) {
-            player->isMoving = true;
             // handle switch & key
             const String* switchTarget = objectDict->valueForKey("switch");
             const String* keyName = objectDict->valueForKey("key");
@@ -296,7 +298,12 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
             if (text->length() && player == _controlledPlayer) {
                 this->showDismissableMessageLayer(text->_string);
             }
-            player->isMoving = false;
+            
+            // play get key sound
+            const String* type = objectDict->valueForKey("type");
+            if (!type->compare("key")) {
+                CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("getKey.wav");
+            }
         }
     }
 }
@@ -304,7 +311,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
 void GameScene::playerMoveFinished(Player* player, std::string lastChat){
     player->isMoving = false;
     platformTrigger(player->endCoord, "player");
-    platformTrigger(player->startCoord, "any");
+    platformToggleOff(player->startCoord, "player");
     if (!player->queuedChat.empty()) {
         if (player == _controlledPlayer) {
             nextMoveSent = false;
@@ -352,14 +359,16 @@ Dictionary* GameScene::objDictFromCoord(TMXLayer* objLayer, TMXObjectGroup* objG
 }
 
 void GameScene::removeObjectsWithName(const char *switchTarget, bool temporary){
-    Dictionary *nextObjDict;
-    while(_objects->getObject(switchTarget)){
-        nextObjDict = _objects->getObject(switchTarget);
-        if (temporary) {
-            auto toggleTarget = _objectTiles->getTileAt(tileCoordFromObjDict(nextObjDict));
-            toggleTarget->setVisible(!toggleTarget->isVisible());
-        } else{
-            _objectTiles->removeTileAt(tileCoordFromObjDict(nextObjDict));
+    Object* nextObj;
+    CCARRAY_FOREACH(_objects->getObjects(), nextObj){
+        Dictionary *nextObjDict = dynamic_cast<Dictionary*>(nextObj);
+        if (!nextObjDict->valueForKey("name")->compare(switchTarget)) {
+            if (temporary) {
+                auto toggleTarget = _objectTiles->getTileAt(tileCoordFromObjDict(nextObjDict));
+                toggleTarget->setVisible(!toggleTarget->isVisible());
+            } else{
+                _objectTiles->removeTileAt(tileCoordFromObjDict(nextObjDict));
+            }
         }
     }
     if (_levelMap->getLayer(switchTarget)) {
@@ -393,25 +402,26 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
     bool hasLocked = false;
     
     int keyCount;
-    Dictionary *nextObjDict;
-    while(_objects->getObject(keyName)){
-        nextObjDict = _objects->getObject(keyName);
-        keyCount = nextObjDict->valueForKey("keyCount")->intValue();
-        Point targetLoc = tileCoordFromObjDict(nextObjDict);
-        if (keyCount <= keyVal) {
-            if (toggle == 0) {
-                _objectTiles->removeTileAt(targetLoc);
-            } else if(toggle == 1){
-                _objectTiles->getTileAt(targetLoc)->setVisible(false);
+    Object* nextObj;
+    CCARRAY_FOREACH(_objects->getObjects(), nextObj){
+        Dictionary *nextObjDict = dynamic_cast<Dictionary*>(nextObj);
+        if (!nextObjDict->valueForKey("name")->compare(keyName)) {
+            keyCount = nextObjDict->valueForKey("keyCount")->intValue();
+            Point targetLoc = tileCoordFromObjDict(nextObjDict);
+            if (keyCount <= keyVal) {
+                if (toggle == 0) {
+                    _objectTiles->removeTileAt(targetLoc);
+                } else if(toggle == 1){
+                    _objectTiles->getTileAt(targetLoc)->setVisible(false);
+                }
+            } else{
+                if(toggle == -1){
+                    _objectTiles->getTileAt(targetLoc)->setVisible(true);
+                }
+                hasLocked = true;
             }
-        } else{
-            if(toggle == -1){
-                _objectTiles->getTileAt(targetLoc)->setVisible(true);
-            }
-            hasLocked = true;
         }
     }
-    Object* nextObj;
     CCARRAY_FOREACH(_levelMap->getChildren(), nextObj){
         TMXLayer *nextLayer = dynamic_cast<TMXLayer*>(nextObj);
         auto properties = nextLayer->getProperties();
@@ -439,6 +449,7 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
         std::stringstream ss2;
         ss2 << keyVal;
         _keyDict->setObject(String::create(ss2.str()), keyName);
+        CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("unlocked.wav");
     }
 }
 
@@ -477,7 +488,9 @@ bool GameScene::collisionCheck(cocos2d::Point coord){
         if (nextLayer->isVisible()) {
             if (nextLayer->getProperties()->valueForKey("collision")->length()) {
                 if (nextLayer->getTileGIDAt(coord)) {
-                    return true;
+                    if (nextLayer->getTileAt(coord)->isVisible()) {
+                        return true;
+                    }
                 }
             }
         }
@@ -512,18 +525,19 @@ void GameScene::tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCo
         const String* blockProperty = properties->valueForKey("block");
         if (blockProperty->length()) {
             platformTrigger(toCoord, blockProperty->getCString());
+            platformToggleOff(fromCoord, blockProperty->getCString());
             return;
         }
     }
     platformTrigger(toCoord, "blocks");
-    platformTrigger(fromCoord, "any");
+    platformToggleOff(fromCoord, "blocks");
 }
 
 void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
     Dictionary *objectDict = objDictFromCoord(_platformTiles, _platforms, coord);
     if (objectDict) {
         const String* blockRequired = objectDict->valueForKey("block");
-        if (!blockRequired->compare(property) || !blockRequired->compare("any") || !strncmp(property, "any", 20)) {
+        if (!blockRequired->compare(property) || !blockRequired->compare("any")) {
             // handle switch, toggle & key
             const String* switchTarget = objectDict->valueForKey("switch");
             const String* toggleTarget = objectDict->valueForKey("toggle");
@@ -533,11 +547,7 @@ void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
                 _platformTiles->removeTileAt(coord);
             } else if (toggleTarget->length()) {
                 if (!toggleTarget->compare("key")) {
-                    if (!strncmp(property, "any", 20)) {
-                        unlockKeyWithName(keyName->getCString(), -1);
-                    } else{
-                        unlockKeyWithName(keyName->getCString(), 1);
-                    }
+                    unlockKeyWithName(keyName->getCString(), 1);
                 }
                 removeObjectsWithName(toggleTarget->getCString(), true);
                 auto toggleTarget = _platformTiles->getTileAt(coord);
@@ -545,6 +555,35 @@ void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
             } else if (keyName->length()) {
                 unlockKeyWithName(keyName->getCString(), 0);
                 _platformTiles->removeTileAt(coord);
+            }
+            
+            const String* text = objectDict->valueForKey("text");
+            if (text->length()) {
+                this->showDismissableMessageLayer(text->getCString());
+            }
+            
+            const String* win = objectDict->valueForKey("win");
+            if (win->length()) {
+                this->unschedule(schedule_selector(GameScene::updateGame));
+            }
+        }
+    }
+}
+
+void GameScene::platformToggleOff(cocos2d::Point coord, const char *property){
+    Dictionary *objectDict = objDictFromCoord(_platformTiles, _platforms, coord);
+    if (objectDict) {
+        const String* blockRequired = objectDict->valueForKey("block");
+        if (!blockRequired->compare(property) || !blockRequired->compare("any")) {
+            // handle toggle off when it was previously on
+            const String* toggleTarget = objectDict->valueForKey("toggle");
+            if (toggleTarget->length()) {
+                if (!toggleTarget->compare("key")) {
+                    const String* keyName = objectDict->valueForKey("key");
+                    unlockKeyWithName(keyName->getCString(), -1);
+                }
+                removeObjectsWithName(toggleTarget->getCString(), true);
+                _platformTiles->getTileAt(coord)->setVisible(true);
             }
         }
     }
