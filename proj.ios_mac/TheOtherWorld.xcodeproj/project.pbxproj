@@ -108,6 +108,7 @@
 		A6EAD382185F2CFA005B29BD /* Default-Landscape.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD37F185F2CFA005B29BD /* Default-Landscape.png */; };
 		A6EAD383185F2CFA005B29BD /* Default-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD380185F2CFA005B29BD /* Default-Landscape@2x.png */; };
 		A6EAD385185F2DFA005B29BD /* Default-568h-Landscape@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD384185F2DFA005B29BD /* Default-568h-Landscape@2x.png */; };
+		A6EAD38E185F37DC005B29BD /* visibility_tiles.png in Resources */ = {isa = PBXBuildFile; fileRef = A6EAD38D185F37DC005B29BD /* visibility_tiles.png */; };
 		BF171245129291EC00B8313A /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB012928DE900B8313A /* OpenGLES.framework */; };
 		BF1712471292920000B8313A /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = BF170DB412928DE900B8313A /* libz.dylib */; };
 		BF1C47F01293687400B63C5D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BF1C47EA1293683800B63C5D /* QuartzCore.framework */; };
@@ -397,6 +398,7 @@
 		A6EAD37F185F2CFA005B29BD /* Default-Landscape.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-Landscape.png"; sourceTree = SOURCE_ROOT; };
 		A6EAD380185F2CFA005B29BD /* Default-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-Landscape@2x.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-Landscape@2x.png"; sourceTree = SOURCE_ROOT; };
 		A6EAD384185F2DFA005B29BD /* Default-568h-Landscape@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h-Landscape@2x.png"; path = "TheOtherWorld iOS/Images.xcassets/LaunchImage.launchimage/Default-568h-Landscape@2x.png"; sourceTree = SOURCE_ROOT; };
+		A6EAD38D185F37DC005B29BD /* visibility_tiles.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = visibility_tiles.png; sourceTree = "<group>"; };
 		BF170DB012928DE900B8313A /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		BF170DB412928DE900B8313A /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		BF1C47EA1293683800B63C5D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -692,6 +694,7 @@
 			children = (
 				A69F188E185D83DD00721CE8 /* allterrain.png */,
 				A69F188F185D83DD00721CE8 /* base_out_atlas.png */,
+				A6EAD38D185F37DC005B29BD /* visibility_tiles.png */,
 				A69F1890185D83DD00721CE8 /* final.tmx */,
 				A69F1891185D83DD00721CE8 /* finalOverlay.tmx */,
 				A69F1894185D83DD00721CE8 /* meta_tiles.png */,
@@ -926,6 +929,7 @@
 				A6EAD383185F2CFA005B29BD /* Default-Landscape@2x.png in Resources */,
 				A6228F4E185B91EC000F5EDC /* man.plist in Resources */,
 				A65A9617184C193800B87768 /* arrow_down.png in Resources */,
+				A6EAD38E185F37DC005B29BD /* visibility_tiles.png in Resources */,
 				A65A9619184C193800B87768 /* arrow_right.png in Resources */,
 				5087E78017EB970100C73F5D /* Icon-57~iphone.png in Resources */,
 				A6EAD385185F2DFA005B29BD /* Default-568h-Landscape@2x.png in Resources */,

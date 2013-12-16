@@ -49,6 +49,8 @@ bool GameScene::init()
         _levelMap->setScale(2.0);
         _levelMap->getLayer("man")->setVisible(false);
         _levelMap->getLayer("girl")->setVisible(false);
+        _levelMap->getLayer("visibility_man")->setVisible(false);
+        _levelMap->getLayer("visibility_girl")->setVisible(false);
         _movables = _levelMap->getLayer("move");
         _objects = _levelMap->getObjectGroup("objects");
         _objectTiles = _levelMap->getLayer("objectTiles");
@@ -770,10 +772,12 @@ void GameScene::onJoinRoomDone(AppWarp::room revent)
             _controlledPlayer = _man;
             _otherPlayer = _girl;
             _levelMap->getLayer("man")->setVisible(true);
+            _levelMap->getLayer("visibility_man")->setVisible(true);
         }else{
             _controlledPlayer = _girl;
             _otherPlayer = _man;
             _levelMap->getLayer("girl")->setVisible(true);
+            _levelMap->getLayer("visibility_girl")->setVisible(true);
         }
         this->startGame();
         removeStartGameLayer();
