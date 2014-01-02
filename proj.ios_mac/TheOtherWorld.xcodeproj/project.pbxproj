@@ -65,6 +65,7 @@
 		A6228F4D185B91EC000F5EDC /* girl.png in Resources */ = {isa = PBXBuildFile; fileRef = A6228F49185B91EC000F5EDC /* girl.png */; };
 		A6228F4E185B91EC000F5EDC /* man.plist in Resources */ = {isa = PBXBuildFile; fileRef = A6228F4A185B91EC000F5EDC /* man.plist */; };
 		A6228F4F185B91EC000F5EDC /* man.png in Resources */ = {isa = PBXBuildFile; fileRef = A6228F4B185B91EC000F5EDC /* man.png */; };
+		A622F94D187548B900F8CB5D /* test.tmx in Resources */ = {isa = PBXBuildFile; fileRef = A622F94C187548B900F8CB5D /* test.tmx */; };
 		A625D3F718428FDC0068D251 /* Player.png in Resources */ = {isa = PBXBuildFile; fileRef = A625D3F418428FDB0068D251 /* Player.png */; };
 		A62AD0F0185AE57900F66D7F /* StartGameLayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A62AD0EE185AE57900F66D7F /* StartGameLayer.cpp */; };
 		A62AD11B185AEF9A00F66D7F /* curl.h in Resources */ = {isa = PBXBuildFile; fileRef = A62AD111185AEF9A00F66D7F /* curl.h */; };
@@ -339,6 +340,7 @@
 		A6228F49185B91EC000F5EDC /* girl.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = girl.png; path = sprites/girl.png; sourceTree = "<group>"; };
 		A6228F4A185B91EC000F5EDC /* man.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = man.plist; path = sprites/man.plist; sourceTree = "<group>"; };
 		A6228F4B185B91EC000F5EDC /* man.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = man.png; path = sprites/man.png; sourceTree = "<group>"; };
+		A622F94C187548B900F8CB5D /* test.tmx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = test.tmx; sourceTree = "<group>"; };
 		A625D3F418428FDB0068D251 /* Player.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Player.png; path = sprites/Player.png; sourceTree = "<group>"; };
 		A62AD0EE185AE57900F66D7F /* StartGameLayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = StartGameLayer.cpp; path = ../Classes/StartGameLayer.cpp; sourceTree = "<group>"; };
 		A62AD0EF185AE57900F66D7F /* StartGameLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = StartGameLayer.h; path = ../Classes/StartGameLayer.h; sourceTree = "<group>"; };
@@ -614,8 +616,8 @@
 		78C7DDAA14EBA5050085D0C2 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A69F18A8185EFD6F00721CE8 /* sounds */,
 				A69F18A6185EF6F900721CE8 /* Images.xcassets */,
+				A69F18A8185EFD6F00721CE8 /* sounds */,
 				A69F188D185D83DD00721CE8 /* levels */,
 				A65A960D184BD98C00B87768 /* sprites */,
 				1AFAF8B916D35E4900DB1158 /* CloseNormal.png */,
@@ -692,6 +694,7 @@
 		A69F188D185D83DD00721CE8 /* levels */ = {
 			isa = PBXGroup;
 			children = (
+				A622F94C187548B900F8CB5D /* test.tmx */,
 				A69F188E185D83DD00721CE8 /* allterrain.png */,
 				A69F188F185D83DD00721CE8 /* base_out_atlas.png */,
 				A6EAD38D185F37DC005B29BD /* visibility_tiles.png */,
@@ -953,6 +956,7 @@
 				5087E77E17EB970100C73F5D /* Default.png in Resources */,
 				A62AD121185AEF9A00F66D7F /* multi.h in Resources */,
 				A69F18A7185EF6F900721CE8 /* Images.xcassets in Resources */,
+				A622F94D187548B900F8CB5D /* test.tmx in Resources */,
 				A62AD11C185AEF9A00F66D7F /* curlbuild.h in Resources */,
 				A62AD11D185AEF9A00F66D7F /* curlrules.h in Resources */,
 				A62AD122185AEF9A00F66D7F /* stdcheaders.h in Resources */,

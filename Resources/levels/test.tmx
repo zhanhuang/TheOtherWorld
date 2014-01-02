@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="16" height="10" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="terrain_atlas" tilewidth="32" tileheight="32">
+  <image source="terrain_atlas.png" width="1024" height="1024"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzbwcDAsGMUj+IBwgCw8HMB
+  </data>
+ </layer>
+ <layer name="Tile Layer 2" width="16" height="10">
+  <properties>
+   <property name="collision" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzbx8DAsA8HhgFc8ujqSAWj+oeHfkowAEqvIiU=
+  </data>
+ </layer>
+ <layer name="platformTiles" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF6OAq00C7gDZgMPoLALCLAa8=
+  </data>
+ </layer>
+ <objectgroup name="platforms" width="16" height="10">
+  <object x="368" y="240">
+   <properties>
+    <property name="key" value="wallKey"/>
+   </properties>
+  </object>
+  <object x="176" y="144">
+   <properties>
+    <property name="key" value="wallKey"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <layer name="objectTiles" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYCAf7KNA7ygYBSAAALEHAL8=
+  </data>
+ </layer>
+ <objectgroup name="objects" width="16" height="10">
+  <object name="spawnPoint1" x="304" y="272"/>
+  <object name="spawnPoint0" x="208" y="272"/>
+ </objectgroup>
+ <layer name="wall" width="16" height="10">
+  <properties>
+   <property name="collision" value="true"/>
+   <property name="wallKey" value="2"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJxjYKAdeM8IwaP6R6Z+YgAA4X4PAQ==
+  </data>
+ </layer>
+ <layer name="girl" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFIwXsGGgHYAEAbOAAuQ==
+  </data>
+ </layer>
+ <layer name="man" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgF6GDHQDtgBAEACC8AuQ==
+  </data>
+ </layer>
+</map>

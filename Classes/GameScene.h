@@ -80,10 +80,12 @@ protected:
     // game mechanisms
     cocos2d::Dictionary* objDictFromCoord(cocos2d::TMXLayer* objLayer, cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord);
     void removeObjectsWithName(const char *switchTarget, bool temporary);
+    void removeKeysWithKeyname(const char *keyName);
+    void removeKeysWithKeynameInGroup(const char *keyName, cocos2d::TMXObjectGroup *group, cocos2d::TMXLayer *layer);
+    void unlockKeyWithName(const char *keyName, int toggle);
     void showDismissableMessageLayer(std::string message);
     void platformTrigger(cocos2d::Point coord, const char *property);
     void platformToggleOff(cocos2d::Point coord, const char *property);
-    void unlockKeyWithName(const char *keyName, int toggle);
     cocos2d::Point tileCoordFromObjDict(cocos2d::Dictionary *objDict);
     
     // appwarp

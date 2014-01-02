@@ -45,12 +45,8 @@ bool GameScene::init()
         this->addChild(_gameLayer);
         
         // add tiled map as background
-        _levelMap = TMXTiledMap::create("final.tmx");
+        _levelMap = TMXTiledMap::create("test.tmx");
         _levelMap->setScale(2.0);
-        _levelMap->getLayer("man")->setVisible(false);
-        _levelMap->getLayer("girl")->setVisible(false);
-        _levelMap->getLayer("visibility_man")->setVisible(false);
-        _levelMap->getLayer("visibility_girl")->setVisible(false);
         _movables = _levelMap->getLayer("move");
         _objects = _levelMap->getObjectGroup("objects");
         _objectTiles = _levelMap->getLayer("objectTiles");
@@ -58,15 +54,14 @@ bool GameScene::init()
         _platformTiles = _levelMap->getLayer("platformTiles");
         _gameLayer->addChild(_levelMap, -2);
         
-        // add overlay tilemap for trees
-        _levelOverlay = TMXTiledMap::create("finalOverlay.tmx");
-        _levelOverlay->setScale(2.0);
-        _gameLayer->addChild(_levelOverlay, 1);
+//        // add overlay tilemap for trees
+//        _levelOverlay = TMXTiledMap::create("finalOverlay.tmx");
+//        _levelOverlay->setScale(2.0);
+//        _gameLayer->addChild(_levelOverlay, 1);
         
         TILE_SIZE = _levelMap->getTileSize().width;
         
         // add players
-        
         Dictionary *spawnPoint0 = _objects->getObject("spawnPoint0");
         int x0 = spawnPoint0->valueForKey("x")->intValue();
         int y0 = spawnPoint0->valueForKey("y")->intValue();
@@ -200,7 +195,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
     float ypos = std::atoi(str4.c_str());
 //    printf("chat is : action:%d,direction:%d,x:%f,y:%f\n",action,direction,xpos,ypos);
     
-    // queue the action is player is moving
+    // queue the action if player is moving
     if (player->isMoving) {
         player->queuedChat = chat;
         return;
@@ -242,7 +237,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         tileCoordItemTarget = tileCoordForPosition(itemTarget + moveVector);
         
         // check for item pushed collision
-        if (_movables->getTileGIDAt(tileCoordItem)) {
+        if (_movables && _movables->getTileGIDAt(tileCoordItem)) {
             // check if item collides when pushed
             if(!_hud->getActionPressed()){
                 if(collisionCheck(tileCoordItemTarget)||_movables->getTileGIDAt(tileCoordItemTarget)){
@@ -272,7 +267,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         player->animateMove(direction);
         player->startCoord = tileCoordForPosition(player->getPosition());
         player->endCoord = tileCoordWalk;
-    }else{
+    }else if(action == 1){
         // standing action
         if (chat.compare(_lastActionChat) == 0) {
             return;
@@ -383,6 +378,31 @@ void GameScene::removeObjectsWithName(const char *switchTarget, bool temporary){
     }
 }
 
+void GameScene::removeKeysWithKeyname(const char *keyName){
+    // remove keys from objects and platforms since all locks have been opened
+    removeKeysWithKeynameInGroup(keyName, _objects, _objectTiles);
+    removeKeysWithKeynameInGroup(keyName, _platforms, _platformTiles);
+}
+
+void GameScene::removeKeysWithKeynameInGroup(const char *keyName, TMXObjectGroup *group, TMXLayer *layer){
+    bool keyRemoved = false;
+    Object* nextObj;
+    Array *objArray = group->getObjects()->clone();
+    int objIndex = 0;
+    CCARRAY_FOREACH(group->getObjects(), nextObj){
+        objIndex = group->getObjects()->getIndexOfObject(nextObj);
+        Dictionary *nextObjDict = dynamic_cast<Dictionary*>(nextObj);
+        if (nextObjDict->valueForKey("key")->length() > 0 && !nextObjDict->valueForKey("key")->compare(keyName)) {
+            objArray->removeObjectAtIndex(objIndex);
+            keyRemoved = true;
+            layer->removeTileAt(tileCoordFromObjDict(nextObjDict));
+        }
+    }
+    if (keyRemoved) {
+        group->setObjects(objArray);
+    }
+}
+
 void GameScene::unlockKeyWithName(const char *keyName, int toggle){
     // increase key count in keyDict
     int keyVal = _keyDict->valueForKey(keyName)->intValue();
@@ -399,7 +419,6 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
     ss << keyVal;
     _keyDict->setObject(String::create(ss.str()), keyName);
     
-    
     // remove corresponding locks
     bool hasLocked = false;
     
@@ -414,7 +433,9 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
                 if (toggle == 0) {
                     _objectTiles->removeTileAt(targetLoc);
                 } else if(toggle == 1){
-                    _objectTiles->getTileAt(targetLoc)->setVisible(false);
+                    if (_objectTiles->getTileAt(targetLoc)->isVisible()) {
+                        _objectTiles->getTileAt(targetLoc)->setVisible(false);
+                    }
                 }
             } else{
                 if(toggle == -1){
@@ -434,7 +455,9 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
                     if (toggle == 0) {
                         _levelMap->removeChild(nextLayer);
                     } else if(toggle == 1){
-                        nextLayer->setVisible(false);
+                        if (nextLayer->isVisible()) {
+                            nextLayer->setVisible(false);
+                        }
                     }
                 } else{
                     if(toggle == -1){
@@ -447,10 +470,8 @@ void GameScene::unlockKeyWithName(const char *keyName, int toggle){
     }
     
     if (!hasLocked) {
-        keyVal += 10;
-        std::stringstream ss2;
-        ss2 << keyVal;
-        _keyDict->setObject(String::create(ss2.str()), keyName);
+        // remove the keys
+        this->removeKeysWithKeyname(keyName);
         CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("unlocked.wav");
     }
 }
@@ -541,23 +562,9 @@ void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
         const String* blockRequired = objectDict->valueForKey("block");
         if (!blockRequired->compare(property) || !blockRequired->compare("any")) {
             // handle switch, toggle & key
-            const String* switchTarget = objectDict->valueForKey("switch");
-            const String* toggleTarget = objectDict->valueForKey("toggle");
+            const String* switchTargetName = objectDict->valueForKey("switch");
+            const String* toggleTargetName = objectDict->valueForKey("toggle");
             const String* keyName = objectDict->valueForKey("key");
-            if (switchTarget->length()) {
-                removeObjectsWithName(switchTarget->getCString(), false);
-                _platformTiles->removeTileAt(coord);
-            } else if (toggleTarget->length()) {
-                if (!toggleTarget->compare("key")) {
-                    unlockKeyWithName(keyName->getCString(), 1);
-                }
-                removeObjectsWithName(toggleTarget->getCString(), true);
-                auto toggleTarget = _platformTiles->getTileAt(coord);
-                toggleTarget->setVisible(!toggleTarget->isVisible());
-            } else if (keyName->length()) {
-                unlockKeyWithName(keyName->getCString(), 0);
-                _platformTiles->removeTileAt(coord);
-            }
             
             const String* text = objectDict->valueForKey("text");
             if (text->length()) {
@@ -567,6 +574,22 @@ void GameScene::platformTrigger(cocos2d::Point coord, const char *property){
             const String* win = objectDict->valueForKey("win");
             if (win->length()) {
                 this->unschedule(schedule_selector(GameScene::updateGame));
+            }
+            
+            if (switchTargetName->length()) {
+                removeObjectsWithName(switchTargetName->getCString(), false);
+                _platformTiles->removeTileAt(coord);
+            } else if (toggleTargetName->length()) {
+                if (!toggleTargetName->compare("key")) {
+                    unlockKeyWithName(keyName->getCString(), 1);
+                } else{
+                    removeObjectsWithName(toggleTargetName->getCString(), true);
+                    auto toggleTarget = _platformTiles->getTileAt(coord);
+                    toggleTarget->setVisible(!toggleTarget->isVisible());
+                }
+            } else if (keyName->length()) {
+                unlockKeyWithName(keyName->getCString(), 0);
+                _platformTiles->removeTileAt(coord);
             }
         }
     }
@@ -771,13 +794,11 @@ void GameScene::onJoinRoomDone(AppWarp::room revent)
         if (isMan) {
             _controlledPlayer = _man;
             _otherPlayer = _girl;
-            _levelMap->getLayer("man")->setVisible(true);
-            _levelMap->getLayer("visibility_man")->setVisible(true);
+            _levelMap->getLayer("girl")->setVisible(false);
         }else{
             _controlledPlayer = _girl;
             _otherPlayer = _man;
-            _levelMap->getLayer("girl")->setVisible(true);
-            _levelMap->getLayer("visibility_girl")->setVisible(true);
+            _levelMap->getLayer("man")->setVisible(false);
         }
         this->startGame();
         removeStartGameLayer();
