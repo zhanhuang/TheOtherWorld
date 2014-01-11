@@ -24,9 +24,9 @@ public:
     // a selector callback
     void menuCloseCallback(Object* sender);
     
-    void menuStartCallback(Object* sender);
+    void SinglePlayerStart(Object* sender);
     
-    void menuConnectCallback(Object* sender);
+    void MultiplayerStart(Object* sender);
     
     // implement the "static node()" method manually
     CREATE_FUNC(MenuScene);

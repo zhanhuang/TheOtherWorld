@@ -20,9 +20,6 @@ Player* Player::createWithSpriteFrameName(const std::string& spriteFrameName){
         thePlayer->isMoving = false;
         thePlayer->makeAnimations(spriteFrameName);
         
-        //init queued chat string
-        thePlayer->queuedChat = "";
-        
         return thePlayer;
     }
     CC_SAFE_DELETE(thePlayer);

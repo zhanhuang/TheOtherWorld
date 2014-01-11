@@ -29,8 +29,6 @@ public:
     cocos2d::Point startCoord;
     cocos2d::Point endCoord;
     
-    // queueing actions
-    std::string queuedChat;
 private:
     std::string _character;
     cocos2d::Array *_upframes;

@@ -22,6 +22,7 @@ public:
     
     int getDirection();
     int getActionPressed();
+    bool switchPlayer;
     
 //    // TODO: implement better touch control
 //    int directionPressed;
@@ -39,8 +40,12 @@ protected:
     cocos2d::MenuItem *_leftArrow;
     cocos2d::MenuItem *_rightArrow;
     cocos2d::MenuItem *_circle;
+    cocos2d::MenuItem *_switch;
     cocos2d::Menu *_dpad;
     cocos2d::Menu *_actionButton;
+    cocos2d::Menu *_switchButton;
+    
+    void switchPlayerPressed();
 };
 
 #endif /* defined(__TheOtherWorld__HUD__) */

@@ -12,7 +12,6 @@
 #include "cocos2d.h"
 #include "HUD.h"
 #include "Player.h"
-#include "StartGameLayer.h"
 #include "appwarp.h"
 
 #define APPWARP_APP_KEY     "de80eeab97716fd56519adb1190a6823384636c0ca1cebb32c2a06d0da692754"
@@ -33,15 +32,16 @@ public:
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameScene);
     
-    void startGame();
+    void GameStart();
     void alignViewPosition(cocos2d::Point playerPosition);
+	void updateGame(float dt);
     
 	void onTouchesEnded(const std::vector<cocos2d::Touch*>& touches, cocos2d::Event* event);
     
-    cocos2d::Point tileCoordForPosition(cocos2d::Point position);
+    bool isSinglePlayer;
     
-	void updateGame(float dt);
-    
+    // TODO: move over to menuscene
+    void multiplayerConnect();
     
 protected:
     int TILE_SIZE;
@@ -65,17 +65,17 @@ protected:
     Player *_otherPlayer;
     bool isMan;
     
-    // queued actions
-    bool nextMoveSent;
-    std::string _lastActionChat;
+    // queue for all actions
+    cocos2d::Array *_chatQueue;
     
     cocos2d::Point moveVectorFromDirection(int direction);
     void processPlayerChat(Player* player, std::string chat);
-    void playerMoveFinished(Player* player, std::string lastChat);
-    void collide(Player* player, int direction, std::string chat);
+    void playerMoveFinished(Player* player);
+    void collide(Player* player, int direction);
     void tileMoveFinished(cocos2d::TMXLayer *layer, cocos2d::Point fromCoord, cocos2d::Point toCoord);
     bool failBoundsCheck(cocos2d::TMXTiledMap *map, cocos2d::Point coord);
     bool collisionCheck(cocos2d::Point coord);
+    cocos2d::Point tileCoordForPosition(cocos2d::Point position);
     
     // game mechanisms
     cocos2d::Dictionary* objDictFromCoord(cocos2d::TMXLayer* objLayer, cocos2d::TMXObjectGroup* objGroup, cocos2d::Point coord);
@@ -94,10 +94,10 @@ protected:
     bool isConnected;
     std::string userName;
     bool isFirstLaunch;
-    StartGameLayer *startGameLayer;
+    cocos2d::LayerColor *_gameOverlay;
     
-    void showStartGameLayer();
-    void removeStartGameLayer();
+    void showOverlay();
+    void removeOverlay();
     
     void onConnectDone(int res);
     void onJoinRoomDone(AppWarp::room revent);

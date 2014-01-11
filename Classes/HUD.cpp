@@ -40,16 +40,25 @@ bool HUD::init(){
     _dpad->setOpacity(128);
     this->addChild(_dpad);
     
-    // add action button
+    // add action & switch buttons
     _circle = MenuItemImage::create("circle.png","circle.png");
-    
     _actionButton = Menu::create();
     _actionButton->addChild(_circle);
+    
+    _switch = MenuItemImage::create("switch.png","switch.png", CC_CALLBACK_0(HUD::switchPlayerPressed, this));
+    _switchButton = Menu::create();
+    _switchButton->addChild(_switch);
     
     auto visibleSize = Director::getInstance()->getVisibleSize();
     _actionButton->setPosition(visibleSize.width - 64, 64);
     _actionButton->setOpacity(128);
     this->addChild(_actionButton);
+    
+    _switchButton->setPosition(visibleSize.width - 64, visibleSize.height - 64);
+    _switchButton->setOpacity(128);
+    this->addChild(_switchButton);
+    
+    switchPlayer = false;
     
 //    // add touch listener
 //    auto dispatcher = Director::getInstance()->getEventDispatcher();
@@ -83,6 +92,10 @@ int HUD::getActionPressed(){
         return 1;
     }
     return 0;
+}
+
+void HUD::switchPlayerPressed(){
+    switchPlayer = true;
 }
 
 //void HUD::onTouchesBegan(const std::vector<Touch*>& touches, Event* event){

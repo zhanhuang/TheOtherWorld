@@ -18,6 +18,10 @@ GameScene::~GameScene()
         _keyDict->release();
         _keyDict = NULL;
     }
+    if(_chatQueue){
+        _chatQueue->release();
+        _chatQueue = NULL;
+    }
 	// cpp don't need to call super dealloc
 	// virtual destructor will do this
 }
@@ -66,7 +70,7 @@ bool GameScene::init()
         int x0 = spawnPoint0->valueForKey("x")->intValue();
         int y0 = spawnPoint0->valueForKey("y")->intValue();
         SpriteBatchNode *batchNodeMan = SpriteBatchNode::create("man.png");
-        _gameLayer->addChild(batchNodeMan);
+        _gameLayer->addChild(batchNodeMan,2);
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile("man.plist");
         _man = Player::createWithSpriteFrameName("man_front0.png");
         _man->setScale(2.0);
@@ -78,7 +82,7 @@ bool GameScene::init()
         int x1 = spawnPoint1->valueForKey("x")->intValue();
         int y1 = spawnPoint1->valueForKey("y")->intValue();
         SpriteBatchNode *batchNodeGirl = SpriteBatchNode::create("girl.png");
-        _gameLayer->addChild(batchNodeGirl);
+        _gameLayer->addChild(batchNodeGirl,2);
         SpriteFrameCache::getInstance()->addSpriteFramesWithFile("girl.plist");
         _girl = Player::createWithSpriteFrameName("girl_front0.png");
         _girl->setScale(2.0);
@@ -86,25 +90,27 @@ bool GameScene::init()
         _girl->setPosition(Point(x1,y1));
         _girl->endCoord = tileCoordForPosition(_girl->getPosition());
         
+        // blue overlay for girl is turned off at first
+        _levelMap->getLayer("blue")->setVisible(true);
+        
         // add HUD
         _hud = HUD::create();
         this->addChild(_hud, 2);
         
-        
-        // align with the girl first. change when game actually starts
+        // align in the midpoint. change when game actually starts
+        // TODO: delete after making room selection screen
         this->alignViewPosition(Point((x0+x1)/2,(y0+y1)/2));
         
-        // init keyDict
+        // init keyDict & chatqueue
         _keyDict = new Dictionary();
         _keyDict->init();
         _keyDict->setObject(Integer::create(1), "placeholder"); //so type is now kdictstr
         
-        // don't queue move at first
-        nextMoveSent = true;
+        _chatQueue = new Array();
+        _chatQueue->init();
         
+        // appwarp variable
         isFirstLaunch = true;
-        showStartGameLayer();
-        
         
 //		// use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
 //		this->schedule( schedule_selector(GameScene::updateGame));
@@ -126,16 +132,28 @@ bool GameScene::init()
 	return bRet;
 }
 
+void GameScene::multiplayerConnect(){
+    connectToAppWarp(this);
+}
+
+void GameScene::GameStart(){
+    if (isMan) {
+        _controlledPlayer = _man;
+        _otherPlayer = _girl;
+        _levelMap->getLayer("girl")->setVisible(false);
+    }else{
+        _controlledPlayer = _girl;
+        _otherPlayer = _man;
+        _levelMap->getLayer("man")->setVisible(false);
+        _levelMap->getLayer("blue")->setVisible(true);
+    }
+    this->alignViewPosition(_controlledPlayer->getPosition());
+    this->schedule(schedule_selector(GameScene::updateGame));
+}
 
 void GameScene::alignViewPosition(Point playerPosition){
     auto visibleSize = Director::getInstance()->getVisibleSize();
     _gameLayer->setPosition(Point(visibleSize.width/2 - playerPosition.x, visibleSize.height/2 - playerPosition.y));
-}
-
-void GameScene::startGame(){
-    this->alignViewPosition(_controlledPlayer->getPosition());
-    // use updateGame instead of update, otherwise it will conflict with SelectorProtocol::update
-    this->schedule( schedule_selector(GameScene::updateGame));
 }
 
 // cpp with cocos2d-x
@@ -148,8 +166,6 @@ void GameScene::onTouchesEnded(const std::vector<Touch*>& touches, Event* event)
     if(tileCoord.x >= _levelMap->getMapSize().width || tileCoord.y >= _levelMap->getMapSize().height || tileCoord.x < 0 || tileCoord.y < 0){
         return;
     }
-    
-	// CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("effect.wav");
 }
 
 Point GameScene::tileCoordForPosition(Point position) {
@@ -160,22 +176,146 @@ Point GameScene::tileCoordForPosition(Point position) {
 
 void GameScene::updateGame(float dt)
 {
-    if (!_controlledPlayer->isMoving || !nextMoveSent) {
-        int action = _hud->getActionPressed();
-        int direction = _hud->getDirection();
-        if (action || direction){
-            float xPos = _controlledPlayer->getPosition().x;
-            float yPos = _controlledPlayer->getPosition().y;
-            if (_controlledPlayer->isMoving) {
-                // send a move to be queued only once.
-                // Set position to negative so no position correction done.
-                nextMoveSent = true;
-                xPos = -1.0;
-                yPos = -1.0;
-            } else{
-                nextMoveSent = false;
+    if (_controlledPlayer->isMoving) {
+        return;
+    }
+    
+    int action = _hud->getActionPressed();
+    int direction = _hud->getDirection();
+    
+    // handle player switch (single player mode only)
+    if (isSinglePlayer && _hud->switchPlayer) {
+        _hud->switchPlayer = false;
+        if (!isMan) {
+            _controlledPlayer = _man;
+            _otherPlayer = _girl;
+            alignViewPosition(_controlledPlayer->getPosition());
+            _levelMap->getLayer("girl")->setVisible(false);
+            _levelMap->getLayer("man")->setVisible(true);
+            _levelMap->getLayer("blue")->setVisible(false);
+        }else{
+            _controlledPlayer = _girl;
+            _otherPlayer = _man;
+            alignViewPosition(_controlledPlayer->getPosition());
+            _levelMap->getLayer("girl")->setVisible(true);
+            _levelMap->getLayer("man")->setVisible(false);
+            _levelMap->getLayer("blue")->setVisible(true);
+        }
+        isMan = !isMan;
+        return;
+    }
+    
+    // handle player walk
+    if (direction != 0) {
+        // movement in a direction
+        _controlledPlayer->faceDirection(direction);
+        Point moveVector = moveVectorFromDirection(direction);
+        auto moveTarget = _controlledPlayer->getPosition() + moveVector;
+        auto tileCoordWalk = tileCoordForPosition(moveTarget);
+        
+        // Check for out of border and collision
+        if(collisionCheck(tileCoordWalk)){
+            collide(_controlledPlayer, direction);
+            return;
+        }
+        
+        /* 
+         * handle pushing / pulling object
+        **/
+        Point itemTarget;
+        Point tileCoordItem;
+        Point tileCoordItemTarget;
+        if (_hud->getActionPressed()) {
+            // pull
+            itemTarget = _controlledPlayer->getPosition() - moveVector;
+        } else{
+            // push
+            itemTarget = _controlledPlayer->getPosition() + moveVector;
+        }
+        tileCoordItem = tileCoordForPosition(itemTarget);
+        tileCoordItemTarget = tileCoordForPosition(itemTarget + moveVector);
+        
+        // check for item pushed collision
+        if (_movables && _movables->getTileGIDAt(tileCoordItem)) {
+            // check if item collides when pushed
+            if(!_hud->getActionPressed()){
+                if(collisionCheck(tileCoordItemTarget)||_movables->getTileGIDAt(tileCoordItemTarget)){
+                    collide(_controlledPlayer, direction);
+                    return;
+                }
             }
-            sendData(action, direction, xPos, yPos);
+            FiniteTimeAction* actionPushed = MoveBy::create(MOVE_TIME-0.1, moveVector/2);
+            FiniteTimeAction* actionPushDone = CallFunc::create(CC_CALLBACK_0(GameScene::tileMoveFinished, this, _movables, tileCoordItem, tileCoordItemTarget));
+            Sequence* pushSeq = Sequence::create(actionPushed, actionPushDone, NULL);
+            _movables->getTileAt(tileCoordItem)->runAction(pushSeq);
+            CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("tileMove.wav");
+        }
+        
+        
+        /*
+         * move is valid. handle player move
+         **/
+        
+        // send player move data
+        float xPos = _controlledPlayer->getPosition().x;
+        float yPos = _controlledPlayer->getPosition().y;
+        sendData(action, direction, xPos, yPos);
+        
+        // Create player movement action
+        FiniteTimeAction* actionMove = MoveBy::create(MOVE_TIME, moveVector);
+        FiniteTimeAction* actionMoveScreen = MoveBy::create(MOVE_TIME, -moveVector);
+        FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, _controlledPlayer));
+        Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
+        
+        // move player, move camera & HUD
+        _gameLayer->runAction(actionMoveScreen);
+        _controlledPlayer->isMoving = true;
+        _controlledPlayer->runAction(actionSeq);
+        _controlledPlayer->animateMove(direction);
+        _controlledPlayer->startCoord = tileCoordForPosition(_controlledPlayer->getPosition());
+        _controlledPlayer->endCoord = tileCoordWalk;
+        
+        return;
+    }
+    
+    // handle standing action
+    if(action == 1){
+        Point moveVector = moveVectorFromDirection(_controlledPlayer->facingDirection);
+        auto actionTarget = _controlledPlayer->getPosition() + moveVector;
+        auto tileCoord = tileCoordForPosition(actionTarget);
+        Dictionary* objectDict = objDictFromCoord(_objectTiles, _objects, tileCoord);
+        if (objectDict) {
+            // handle read
+            const String* text = objectDict->valueForKey("text");
+            if (text->length()) {
+                this->showDismissableMessageLayer(text->_string);
+            }
+            
+            // play get key sound
+            const String* type = objectDict->valueForKey("type");
+            if (!type->compare("key")) {
+                CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("getKey.wav");
+            }
+            
+            // handle switch & key
+            const String* switchTarget = objectDict->valueForKey("switch");
+            const String* keyName = objectDict->valueForKey("key");
+            
+            // send player action data
+            if (switchTarget->length() || keyName->length()) {
+                float xPos = _controlledPlayer->getPosition().x;
+                float yPos = _controlledPlayer->getPosition().y;
+                sendData(action, direction, xPos, yPos);
+            }
+            
+            if (switchTarget->length()) {
+                removeObjectsWithName(switchTarget->getCString(), false);
+                _objectTiles->removeTileAt(tileCoord);
+            } else if (keyName->length()) {
+                unlockKeyWithName(keyName->getCString(), 0);
+                _objectTiles->removeTileAt(tileCoord);
+            }
+            
         }
     }
 }
@@ -195,18 +335,9 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
     float ypos = std::atoi(str4.c_str());
 //    printf("chat is : action:%d,direction:%d,x:%f,y:%f\n",action,direction,xpos,ypos);
     
-    // queue the action if player is moving
-    if (player->isMoving) {
-        player->queuedChat = chat;
-        return;
-    }
-    
     // correct player position & state
     if (xpos > 0) {
         player->setPosition(Point(xpos, ypos));
-        if (player == _controlledPlayer) {
-            this->alignViewPosition(_controlledPlayer->getPosition());
-        }
     }
     
     if (direction != 0) {
@@ -218,7 +349,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         
         // Check for out of border and collision
         if(collisionCheck(tileCoordWalk)){
-            collide(player, direction, chat);
+            collide(player, direction);
             return;
         }
         
@@ -241,7 +372,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
             // check if item collides when pushed
             if(!_hud->getActionPressed()){
                 if(collisionCheck(tileCoordItemTarget)||_movables->getTileGIDAt(tileCoordItemTarget)){
-                   collide(player, direction, chat);
+                   collide(player, direction);
                    return;
                 }
             }
@@ -255,7 +386,7 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         // Create player movement action
         FiniteTimeAction* actionMove = MoveBy::create(MOVE_TIME, moveVector);
         FiniteTimeAction* actionMoveScreen = MoveBy::create(MOVE_TIME, -moveVector);
-        FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player, chat));
+        FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player));
         Sequence* actionSeq = Sequence::create(actionMove, actionMoveDone, NULL);
         
         // move player, move camera & HUD if it's controlled player
@@ -269,27 +400,11 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
         player->endCoord = tileCoordWalk;
     }else if(action == 1){
         // standing action
-        if (chat.compare(_lastActionChat) == 0) {
-            return;
-        } else{
-            _lastActionChat = chat;
-        }
         Point moveVector = moveVectorFromDirection(player->facingDirection);
         auto actionTarget = player->getPosition() + moveVector;
         auto tileCoord = tileCoordForPosition(actionTarget);
         Dictionary* objectDict = objDictFromCoord(_objectTiles, _objects, tileCoord);
         if (objectDict) {
-            // handle switch & key
-            const String* switchTarget = objectDict->valueForKey("switch");
-            const String* keyName = objectDict->valueForKey("key");
-            if (switchTarget->length()) {
-                removeObjectsWithName(switchTarget->getCString(), false);
-                _objectTiles->removeTileAt(tileCoord);
-            } else if (keyName->length()) {
-                unlockKeyWithName(keyName->getCString(), 0);
-                _objectTiles->removeTileAt(tileCoord);
-            }
-            
             // handle read
             const String* text = objectDict->valueForKey("text");
             if (text->length() && player == _controlledPlayer) {
@@ -301,24 +416,26 @@ void GameScene::processPlayerChat(Player* player, std::string chat)
             if (!type->compare("key")) {
                 CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("getKey.wav");
             }
+            
+            // handle switch & key
+            const String* switchTarget = objectDict->valueForKey("switch");
+            const String* keyName = objectDict->valueForKey("key");
+            if (switchTarget->length()) {
+                removeObjectsWithName(switchTarget->getCString(), false);
+                _objectTiles->removeTileAt(tileCoord);
+            } else if (keyName->length()) {
+                unlockKeyWithName(keyName->getCString(), 0);
+                _objectTiles->removeTileAt(tileCoord);
+            }
+
         }
     }
 }
 
-void GameScene::playerMoveFinished(Player* player, std::string lastChat){
+void GameScene::playerMoveFinished(Player* player){
     player->isMoving = false;
     platformTrigger(player->endCoord, "player");
     platformToggleOff(player->startCoord, "player");
-    if (!player->queuedChat.empty()) {
-        if (player == _controlledPlayer) {
-            nextMoveSent = false;
-        }
-        // check not the same first move
-        if (player->queuedChat.compare(lastChat) != 0 || player->queuedChat.find("-") != std::string::npos) {
-            processPlayerChat(player, player->queuedChat);
-        }
-        player->queuedChat = "";
-    }
 }
 
 Point GameScene::moveVectorFromDirection(int direction){
@@ -482,12 +599,12 @@ Point GameScene::tileCoordFromObjDict(Dictionary *objDict){
     return tileCoordForPosition(Point(x,y));
 }
 
-void GameScene::collide(Player* player, int direction, std::string chat){
+void GameScene::collide(Player* player, int direction){
     Point moveVector = moveVectorFromDirection(direction);
     player->isMoving = true;
     FiniteTimeAction* actionMove = MoveBy::create((MOVE_TIME-0.1)/2, moveVector/4);
     FiniteTimeAction* actionMove2 = MoveBy::create((MOVE_TIME-0.1)/2, -moveVector/4);
-    FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player, chat));
+    FiniteTimeAction* actionMoveDone = CallFunc::create(CC_CALLBACK_0(GameScene::playerMoveFinished, this, player));
     Sequence* actionSeq = Sequence::create(actionMove, actionMove2, actionMoveDone, NULL);
     player->runAction(actionSeq);
 }
@@ -615,30 +732,13 @@ void GameScene::platformToggleOff(cocos2d::Point coord, const char *property){
 }
 
 /***
- * AppWarp Helper Methods
+ * AppWarp Helper Methods for joining room
+ * TODO: move to menu scene
  */
 
-void GameScene::showStartGameLayer()
+void GameScene::removeOverlay()
 {
-    // Get the dimensions of the window for calculation purposes
-    Size winSize = Director::getInstance()->getWinSize();
-    
-    startGameLayer = StartGameLayer::create();
-    addChild(startGameLayer, 100);
-    
-    LabelTTF *buttonTitle = LabelTTF::create("Start Game", "Marker Felt", 30);
-    buttonTitle->setColor(Color3B::WHITE);
-    
-    MenuItemLabel *startGameButton = MenuItemLabel::create(buttonTitle, CC_CALLBACK_1(GameScene::connectToAppWarp, this));
-    startGameButton->setPosition(Point(winSize.width/2,winSize.height/2));
-    Menu *pMenu = Menu::create(startGameButton,NULL);
-    pMenu->setPosition(Point::ZERO);
-    startGameLayer->addChild(pMenu, 1);
-}
-
-void GameScene::removeStartGameLayer()
-{
-    removeChild(startGameLayer,false);
+    removeChild(_gameOverlay,false);
     if(_controlledPlayer){
         _controlledPlayer->isMoving = false;
     }
@@ -687,6 +787,7 @@ void GameScene::onConnectDone(int res)
         printf("\nonConnectDone .. SUCCESS..session=%d\n",AppWarp::AppWarpSessionID);
         AppWarp::Client *warpClientRef;
         warpClientRef = AppWarp::Client::getInstance();
+        
         // join room with 1 player. Second player to join a room is man
         isMan = true;
         warpClientRef->joinRoomInUserRange(1, 1, false);
@@ -695,7 +796,7 @@ void GameScene::onConnectDone(int res)
     else if (res==AppWarp::ResultCode::success_recovered)
     {
         unscheduleRecover();
-        removeStartGameLayer();
+        removeOverlay();
         printf("\nonConnectDone .. SUCCESS with success_recovered..session=%d\n",AppWarp::AppWarpSessionID);
     }
     else if (res==AppWarp::ResultCode::connection_error_recoverable)
@@ -741,46 +842,15 @@ void GameScene::showReconnectingLayer(std::string message)
     // Get the dimensions of the window for calculation purposes
     Size winSize = Director::getInstance()->getWinSize();
     
-    startGameLayer = StartGameLayer::create();
-    startGameLayer->setColor(Color3B(0, 0, 0));
-    startGameLayer->setOpacity(50);
-    addChild(startGameLayer);
+    _gameOverlay = LayerColor::create(Color4B(0, 0, 0, 50));
+    addChild(_gameOverlay);
     
     LabelTTF *buttonTitle = LabelTTF::create(message.c_str(), "Marker Felt", 30);
     buttonTitle->setColor(Color3B::WHITE);
-    startGameLayer->addChild(buttonTitle);
+    _gameOverlay->addChild(buttonTitle);
     buttonTitle->setPosition(Point(winSize.width/2,winSize.height/2));
     
     
-}
-
-void GameScene::showDismissableMessageLayer(std::string message)
-{
-    this->removeStartGameLayer();
-    if (_controlledPlayer) {
-        _controlledPlayer->isMoving = true;
-    }
-    
-    // Get the dimensions of the window for calculation purposes
-    Size winSize = Director::getInstance()->getWinSize();
-    
-    startGameLayer = StartGameLayer::create();
-    startGameLayer->setColor(Color3B(0, 0, 0));
-    startGameLayer->setOpacity(180);
-    addChild(startGameLayer, 3);
-    
-    LabelTTF *buttonTitle = LabelTTF::create(message.c_str(), "Marker Felt", 18, Size(300, 0), TextHAlignment::CENTER);
-    buttonTitle->setColor(Color3B::WHITE);
-    startGameLayer->addChild(buttonTitle);
-    buttonTitle->setPosition(Point(winSize.width/2,winSize.height/2));
-    
-    LabelTTF *dismissButtonTitle = LabelTTF::create("BACK", "Marker Felt", 30);
-    dismissButtonTitle->setColor(Color3B::GRAY);
-    MenuItemLabel *dismissButton = MenuItemLabel::create(dismissButtonTitle, CC_CALLBACK_0(GameScene::removeStartGameLayer, this));
-    dismissButton->setPosition(Point(winSize.width*7/8,winSize.height/5));
-    Menu *pMenu = Menu::create(dismissButton,NULL);
-    pMenu->setPosition(Point::ZERO);
-    startGameLayer->addChild(pMenu, 1);
 }
 
 void GameScene::onJoinRoomDone(AppWarp::room revent)
@@ -791,17 +861,7 @@ void GameScene::onJoinRoomDone(AppWarp::room revent)
         AppWarp::Client *warpClientRef;
         warpClientRef = AppWarp::Client::getInstance();
         warpClientRef->subscribeRoom(revent.roomId);
-        if (isMan) {
-            _controlledPlayer = _man;
-            _otherPlayer = _girl;
-            _levelMap->getLayer("girl")->setVisible(false);
-        }else{
-            _controlledPlayer = _girl;
-            _otherPlayer = _man;
-            _levelMap->getLayer("man")->setVisible(false);
-        }
-        this->startGame();
-        removeStartGameLayer();
+        this->GameStart();
     }
     else{
         printf("\nonJoinRoomDone .. FAILED\n");
@@ -833,8 +893,44 @@ void GameScene::onSubscribeRoomDone(AppWarp::room revent)
         printf("\nonSubscribeRoomDone .. FAILED\n");
 }
 
+/***
+ * Sending and receiving data
+ */
+
+void GameScene::showDismissableMessageLayer(std::string message)
+{
+    this->removeOverlay();
+    if (_controlledPlayer) {
+        _controlledPlayer->isMoving = true;
+    }
+    
+    // Get the dimensions of the window for calculation purposes
+    Size winSize = Director::getInstance()->getWinSize();
+    
+    _gameOverlay = LayerColor::create(Color4B(0, 0, 0, 180));
+    addChild(_gameOverlay, 3);
+    
+    LabelTTF *buttonTitle = LabelTTF::create(message.c_str(), "Marker Felt", 18, Size(300, 0), TextHAlignment::CENTER);
+    buttonTitle->setColor(Color3B::WHITE);
+    _gameOverlay->addChild(buttonTitle);
+    buttonTitle->setPosition(Point(winSize.width/2,winSize.height/2));
+    
+    LabelTTF *dismissButtonTitle = LabelTTF::create("BACK", "Marker Felt", 30);
+    dismissButtonTitle->setColor(Color3B::GRAY);
+    MenuItemLabel *dismissButton = MenuItemLabel::create(dismissButtonTitle, CC_CALLBACK_0(GameScene::removeOverlay, this));
+    dismissButton->setPosition(Point(winSize.width*7/8,winSize.height/5));
+    Menu *pMenu = Menu::create(dismissButton,NULL);
+    pMenu->setPosition(Point::ZERO);
+    _gameOverlay->addChild(pMenu, 1);
+}
+
 void GameScene::sendData(int action, int direction, float xpos, float ypos)
 {
+    if (isSinglePlayer) {
+        // don't send data if in single player mode
+        return;
+    }
+    
     AppWarp::Client *warpClientRef;
 	warpClientRef = AppWarp::Client::getInstance();
     
@@ -846,21 +942,21 @@ void GameScene::sendData(int action, int direction, float xpos, float ypos)
 void GameScene::onChatReceived(AppWarp::chat chatevent)
 {
     printf("onChatReceived..");
-    Player* player;
     if(chatevent.sender != userName){
-        player = _otherPlayer;
-    }else{
-        player = _controlledPlayer;
+        if (_otherPlayer->isMoving) {
+            //TODO: finish this
+            _chatQueue->addObject(String::create(chatevent.chat));
+        } else{
+            this->processPlayerChat(_otherPlayer, chatevent.chat);
+        }
     }
-    
-    this->processPlayerChat(player, chatevent.chat);
 }
 
 void GameScene::onUserPaused(std::string user,std::string locId,bool isLobby)
 {
     //    printf("\nonUserPaused...user=%s",user.c_str());
     //    printf("\nonUserPaused...locId=%s",locId.c_str());
-    std::string message = "Other user connection lost";
+    std::string message = "Other user paused";
     showDismissableMessageLayer(message);
 }
 
@@ -868,5 +964,5 @@ void GameScene::onUserResumed(std::string user,std::string locId,bool isLobby)
 {
     //    printf("\nonUserResumed...user=%s",user.c_str());
     //    printf("\nonUserResumed...locId=%s",locId.c_str());
-    // removeStartGameLayer();
+    removeOverlay();
 }

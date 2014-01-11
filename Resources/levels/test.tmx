@@ -8,14 +8,6 @@
    eJzbwcDAsGMUj+IBwgCw8HMB
   </data>
  </layer>
- <layer name="Tile Layer 2" width="16" height="10">
-  <properties>
-   <property name="collision" value="true"/>
-  </properties>
-  <data encoding="base64" compression="zlib">
-   eJzbx8DAsA8HhgFc8ujqSAWj+oeHfkowAEqvIiU=
-  </data>
- </layer>
  <layer name="platformTiles" width="16" height="10">
   <data encoding="base64" compression="zlib">
    eJxjYBgF6OAq00C7gDZgMPoLALCLAa8=
@@ -59,6 +51,19 @@
  <layer name="man" width="16" height="10">
   <data encoding="base64" compression="zlib">
    eJxjYBgF6GDHQDtgBAEACC8AuQ==
+  </data>
+ </layer>
+ <layer name="blue" width="16" height="10">
+  <data encoding="base64" compression="zlib">
+   eJzbxcDAsGsUj+IBwgBDjnRB
+  </data>
+ </layer>
+ <layer name="border" width="16" height="10">
+  <properties>
+   <property name="collision" value="true"/>
+  </properties>
+  <data encoding="base64" compression="zlib">
+   eJzbx8DAsA8HhgFc8ujqSAWj+oeHfkowAEqvIiU=
   </data>
  </layer>
 </map>

@@ -61,21 +61,21 @@ bool MenuScene::init()
     // 3. add your codes below...
     
     // Tutorial Start Button
-    auto startLabel = LabelTTF::create("Start Tutorial", "Arial", TITLE_FONT_SIZE);
+    auto startLabel = LabelTTF::create("Single Player", "Arial", TITLE_FONT_SIZE);
     startLabel->setColor(Color3B(255, 255, 255));
     auto startItem = MenuItemLabel::create(
                                            startLabel,
-                                           CC_CALLBACK_1(MenuScene::menuStartCallback, this));
+                                           CC_CALLBACK_1(MenuScene::SinglePlayerStart, this));
     startItem->setPosition(Point(origin.x + visibleSize.width/2,
                                  origin.y + visibleSize.height/2 +
                                  startLabel->getContentSize().height));
     
     // Game Start Button
-    auto connectLabel = LabelTTF::create("Start Game", "Arial", TITLE_FONT_SIZE);
+    auto connectLabel = LabelTTF::create("Multiplayer", "Arial", TITLE_FONT_SIZE);
     connectLabel->setColor(Color3B(255, 255, 255));
     auto connectItem = MenuItemLabel::create(
                                            connectLabel,
-                                           CC_CALLBACK_1(MenuScene::menuConnectCallback, this));
+                                           CC_CALLBACK_1(MenuScene::MultiplayerStart, this));
     connectItem->setPosition(Point(origin.x + visibleSize.width/2,
                                  origin.y + visibleSize.height/2 -
                                  startLabel->getContentSize().height));
@@ -99,15 +99,19 @@ void MenuScene::menuCloseCallback(Object* sender)
 #endif
 }
 
-void MenuScene::menuStartCallback(Object* sender)
+void MenuScene::SinglePlayerStart(Object* sender)
 {
     auto newGameScene = GameScene::create();
+    newGameScene->isSinglePlayer = true;
+    newGameScene->GameStart();
     Director::getInstance()->replaceScene(newGameScene);
 }
 
 
-void MenuScene::menuConnectCallback(Object* sender)
+void MenuScene::MultiplayerStart(Object* sender)
 {
     auto newGameScene = GameScene::create();
+    newGameScene->isSinglePlayer = false;
+    newGameScene->multiplayerConnect();
     Director::getInstance()->replaceScene(newGameScene);
 }
