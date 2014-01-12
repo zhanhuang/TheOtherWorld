@@ -53,6 +53,7 @@ protected:
     cocos2d::TMXObjectGroup *_platforms;
     cocos2d::TMXLayer *_platformTiles;
     cocos2d::TMXLayer *_movables;
+    cocos2d::TMXLayer *_blue;
     cocos2d::Layer *_gameLayer;
     HUD *_hud;
     

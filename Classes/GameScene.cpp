@@ -49,7 +49,19 @@ bool GameScene::init()
         this->addChild(_gameLayer);
         
         // add tiled map as background
-        _levelMap = TMXTiledMap::create("test.tmx");
+        
+        
+//        // testing map
+//        _levelMap = TMXTiledMap::create("test.tmx");
+//        _blue = _levelMap->getLayer("blue");
+        
+        // final map
+        _levelMap = TMXTiledMap::create("final.tmx");
+        _levelOverlay = TMXTiledMap::create("finalOverlay.tmx");
+        _levelOverlay->setScale(2.0);
+        _gameLayer->addChild(_levelOverlay, 1);
+        _blue = _levelOverlay->getLayer("blue");
+        
         _levelMap->setScale(2.0);
         _movables = _levelMap->getLayer("move");
         _objects = _levelMap->getObjectGroup("objects");
@@ -58,10 +70,7 @@ bool GameScene::init()
         _platformTiles = _levelMap->getLayer("platformTiles");
         _gameLayer->addChild(_levelMap, -2);
         
-//        // add overlay tilemap for trees
-//        _levelOverlay = TMXTiledMap::create("finalOverlay.tmx");
-//        _levelOverlay->setScale(2.0);
-//        _gameLayer->addChild(_levelOverlay, 1);
+        
         
         TILE_SIZE = _levelMap->getTileSize().width;
         
@@ -90,8 +99,6 @@ bool GameScene::init()
         _girl->setPosition(Point(x1,y1));
         _girl->endCoord = tileCoordForPosition(_girl->getPosition());
         
-        // blue overlay for girl is turned off at first
-        _levelMap->getLayer("blue")->setVisible(true);
         
         // add HUD
         _hud = HUD::create();
@@ -145,7 +152,7 @@ void GameScene::GameStart(){
         _controlledPlayer = _girl;
         _otherPlayer = _man;
         _levelMap->getLayer("man")->setVisible(false);
-        _levelMap->getLayer("blue")->setVisible(true);
+        _blue->setVisible(true);
     }
     this->alignViewPosition(_controlledPlayer->getPosition());
     this->schedule(schedule_selector(GameScene::updateGame));
@@ -192,14 +199,14 @@ void GameScene::updateGame(float dt)
             alignViewPosition(_controlledPlayer->getPosition());
             _levelMap->getLayer("girl")->setVisible(false);
             _levelMap->getLayer("man")->setVisible(true);
-            _levelMap->getLayer("blue")->setVisible(false);
+            _blue->setVisible(false);
         }else{
             _controlledPlayer = _girl;
             _otherPlayer = _man;
             alignViewPosition(_controlledPlayer->getPosition());
             _levelMap->getLayer("girl")->setVisible(true);
             _levelMap->getLayer("man")->setVisible(false);
-            _levelMap->getLayer("blue")->setVisible(true);
+            _blue->setVisible(true);
         }
         isMan = !isMan;
         return;
